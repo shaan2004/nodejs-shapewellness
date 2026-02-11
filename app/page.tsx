@@ -168,7 +168,9 @@ export default function Home() {
   return (
     <>
       {/* PRELOADER */}
-      <div className={`preloader ${isLoaded ? 'hidden' : ''}`} id="preloader">
+      <div className={`preloader-container ${isLoaded ? 'loaded' : ''}`}>
+        <div className="preloader-half top"></div>
+        <div className="preloader-half bottom"></div>
         <div className="preloader-logo">Shape Wellness</div>
       </div>
 

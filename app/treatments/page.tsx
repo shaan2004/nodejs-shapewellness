@@ -232,7 +232,7 @@ export default function Treatments() {
                 <div className="card-content">
                   <span className="card-category">Smile Care</span>
                   <h3 className="card-title">Dental Aesthetics</h3>
-                  <p class="card-text">Comprehensive dental solutions including teeth whitening, veneers, and smile designing to perfect your smile.</p>
+                  <p className="card-text">Comprehensive dental solutions including teeth whitening, veneers, and smile designing to perfect your smile.</p>
                   <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
                 </div>
               </div>

@@ -132,7 +132,7 @@ header {
 }
 .container { max-width: 1300px; margin: 0 auto; padding: 0 40px; }
 nav { display: flex; justify-content: space-between; align-items: center; }
-.logo-img { height: 60px; width: auto; display: block; object-fit: contain; }
+.logo-img { height: 80px; width: auto; display: block; object-fit: contain; }
 
 .nav-links { display: flex; gap: 30px; align-items: center; }
 .nav-links a { 
@@ -152,7 +152,7 @@ nav { display: flex; justify-content: space-between; align-items: center; }
 /* --- FOOTER --- */
 footer { background-color: var(--footer-bg); color: var(--white); padding: 100px 0 30px 0; position: relative; z-index: 20; }
 .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 80px; }
-.footer-logo { font-size: 2.5rem; margin-bottom: 20px; display: block; }
+.footer-logo { font-size: 2.5rem;  margin-bottom: 20px; display: block; }
 .footer-links a { display: block; color: #888; margin-bottom: 12px; font-size: 1.1rem; transition: 0.3s; }
 .footer-links a:hover { color: var(--primary-orange); transform: translateX(5px); }
 .copyright { text-align: center; border-top: 1px solid #333; padding-top: 30px; color: #555; }
@@ -479,7 +479,7 @@ textarea { resize: none; height: 80px; }
 .author-avatar { width: 50px; height: 50px; border-radius: 50%; background: #eee; object-fit: cover; }
 .author-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
 .author-info span { font-size: 0.85rem; color: var(--primary-orange); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-/*/* =========================================
+/* =========================================
    4. TREATMENTS PAGE STYLES
    ========================================= */
 
@@ -649,56 +649,60 @@ textarea { resize: none; height: 80px; }
     transform: translateX(5px); 
 }
 
-/* --- MOBILE FIX (Disables Twitching) --- */
+
+/* --- MOBILE STYLES (Fixed Text Breaking & Glitching) --- */
 @media (max-width: 900px) {
-    
-    /* 1. Reset Grid Layout */
+
     .treatment-grid { 
-        padding-bottom: 60px; /* Remove extra bottom space */
-        gap: 40px; 
+        padding-bottom: 120px; 
+        gap: 20px; 
         display: flex;
         flex-direction: column;
     }
 
-    /* 2. Reset Card to Normal Flow (No Sticky, No Rotate) */
     .treatment-card { 
-        position: relative;        /* Stops sticky behavior */
-        top: auto !important;      /* Reset top position */
-        left: auto;
-        transform: none !important; /* Remove rotation */
+        position: sticky;       /* Keep the sticky effect */
+        top: 100px;             /* Base sticky position */
+        left: 0;
+        
+        /* IMPORTANT: Remove Rotation & Translation to fix Text Glitch */
+        transform: none !important; 
+        will-change: auto;      /* Reset optimization that causes blur */
         
         width: 100%;
         min-height: auto;
-        flex-direction: column;    /* Stack image on top of text */
-        z-index: 1 !important; 
-        margin-bottom: 0;
+        flex-direction: column;
+        margin-bottom: 30px;    /* Adds spacing between cards as you scroll */
+        
+        background: var(--white); /* Ensure background is solid */
+        z-index: 1;
     }
 
-    /* 3. Force Reset All nth-child Rotations */
-    .treatment-card:nth-child(n) { 
-        top: auto; 
-        transform: none; 
-        z-index: 1; 
-    }
+    /* STACKING EFFECT: 
+       We keep the 'deck of cards' feel by offsetting the 'top' slightly.
+       But we strictly remove 'rotate' to stop the layout from breaking.
+    */
+    .treatment-card:nth-child(1) { top: 100px; z-index: 1; }
+    .treatment-card:nth-child(2) { top: 115px; z-index: 2; } /* +15px gap */
+    .treatment-card:nth-child(3) { top: 130px; z-index: 3; }
+    .treatment-card:nth-child(4) { top: 145px; z-index: 4; }
+    .treatment-card:nth-child(5) { top: 160px; z-index: 5; }
+    .treatment-card:nth-child(6) { top: 175px; z-index: 6; }
+    .treatment-card:nth-child(7) { top: 190px; z-index: 7; }
+    .treatment-card:nth-child(8) { top: 205px; z-index: 8; }
 
-    /* 4. Remove Jump Effect on Touch */
+    /* Disable Desktop Hover Effects on Mobile */
     .treatment-card:hover { 
         margin-top: 0; 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
     }
 
-    /* 5. Adjust Inner Content */
-    .card-img-container { 
-        width: 100%; 
-        height: 250px; /* Fixed height for mobile image */
-    }
-
-    .card-content { 
-        width: 100%; 
-        padding: 30px 25px; 
-    }
+    /* Mobile Content Adjustments */
+    .card-img-container { width: 100%; height: 250px; }
+    .card-content { width: 100%; padding: 30px 20px; }
+    .card-title { font-size: 1.8rem; }
+    .card-text { font-size: 1rem; }
 }
-
 /* =========================================
    5. EXPERIENCE PAGE STYLES
    ========================================= */

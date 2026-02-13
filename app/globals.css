@@ -47,7 +47,7 @@ section { padding: 100px 0; }
 
 /* --- PRELOADER --- */
 /* =========================
-   UPDATED PRELOADER (SPLIT)
+   UPDATED PRELOADER (SPLIT + IMAGE LOGO)
    ========================= */
 
 /* The main container holds everything */
@@ -92,18 +92,24 @@ section { padding: 100px 0; }
     z-index: 1;
 }
 
-/* The Logo - Centered on top of the split */
+/* --- LOGO STYLES (UPDATED FOR IMAGE) --- */
 .preloader-logo { 
     position: relative;
     z-index: 2;
-    color: var(--text-dark); 
-    /* Add a text shadow so it is visible on the white part if it overlaps */
-    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    font-size: 3.5rem; 
-    font-weight: 700; 
-    font-style: italic; 
-    font-family: var(--font-playfair);
+    /* Controls the size of the logo container */
+    width: 180px; 
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Ensures the image fits inside the container */
+.preloader-logo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 /* --- EXIT ANIMATIONS --- */
@@ -307,6 +313,7 @@ textarea { resize: none; height: 80px; }
     grid-template-columns: 1fr 1fr; 
     gap: 80px; 
     align-items: center; 
+    justify-content: center;
 }
 
 .journey-img-wrapper { 
@@ -318,9 +325,9 @@ textarea { resize: none; height: 80px; }
 }
 
 .journey-img { 
-    width: 100%; 
+    width: 140%; 
     height: 120%; 
-    background-image: url('/assets/2025-09-21.webp'); 
+    background-image: url('/assets/Gemini_Generated_Image_yvy2dfyvy2dfyvy2.png'); 
     background-size: cover; 
     background-position: center; 
     position: absolute; 
@@ -340,23 +347,25 @@ textarea { resize: none; height: 80px; }
     font-size: 3.5rem; 
     margin-bottom: 30px; 
     color: var(--text-dark); 
+    justify-content: ;
+    
 }
 
 .journey-content p { 
     font-size: 1.1rem; 
     color: var(--text-light); 
     margin-bottom: 40px; 
+    
 }
 
 .stats-box { 
-    display: flex; 
-    gap: 60px; 
-    border-top: 1px solid #ddd; 
-    padding-top: 30px; 
-    justify-content: center; /* Centers stats */
-    width: 100%;
-}
-
+        display: flex;
+        flex-wrap: wrap;              /* Allows wrapping if screen is tiny */
+        justify-content: center;      /* Centers them perfectly */
+        gap: 20px !important;         /* Reduced from 60px to 20px */
+        width: 100%;
+        padding-top: 20px;
+    }
 .stat-item h3 { 
     font-size: 3rem; 
     color: var(--primary-orange); 
@@ -411,7 +420,7 @@ textarea { resize: none; height: 80px; }
 /* INFO CARDS (Signature) */
 .info-card {
     background: #f5f5f5; 
-    border-radius: 0px; 
+    border-radius: 40px; 
     width: 400px; 
     flex-shrink: 0;
     padding: 50px 30px; 
@@ -422,8 +431,9 @@ textarea { resize: none; height: 80px; }
 
 .info-card:hover { 
     transform: translateY(-10px); 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.05); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55);
     border-color: var(--primary-orange); 
+    
 }
 
 .card-icon { font-size: 3rem; margin-bottom: 20px; color: var(--text-dark); }
@@ -444,7 +454,8 @@ textarea { resize: none; height: 80px; }
 
 .clinical-card:hover { 
     transform: translateY(-10px); 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.05); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    
     border-color: var(--primary-orange); 
 }
 
@@ -469,6 +480,7 @@ textarea { resize: none; height: 80px; }
 
 .review-card-outline:hover { 
     border-color: var(--primary-orange); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
     background: var(--bg-off-white); 
 }
 
@@ -567,7 +579,7 @@ textarea { resize: none; height: 80px; }
 /* Desktop Hover Effect */
 .treatment-card:hover { 
     margin-top: -10px; 
-    box-shadow: 0 30px 60px rgba(0,0,0,0.15); 
+   box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55);
     border-color: var(--primary-orange); 
 }
 
@@ -694,7 +706,7 @@ textarea { resize: none; height: 80px; }
     /* Disable Desktop Hover Effects on Mobile */
     .treatment-card:hover { 
         margin-top: 0; 
-        box-shadow: 0 10px 40px rgba(0,0,0,0.08); 
+        box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
     }
 
     /* Mobile Content Adjustments */
@@ -716,7 +728,7 @@ textarea { resize: none; height: 80px; }
 
 .circle-image { width: 250px; height: 250px; border-radius: 50%; overflow: hidden; margin: 0 auto 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 5px solid white; transition: border-color 0.4s ease, transform 0.4s ease; }
 .circle-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--easing); }
-.transform-card:hover .circle-image { border-color: var(--primary-orange); transform: scale(1.02); }
+.transform-card:hover .circle-image { border-color: var(--primary-orange);box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); transform: scale(1.02); }
 .transform-card:hover .circle-image img { transform: scale(1.1); }
 .transform-card p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 15px; min-height: 80px; }
 .transform-card h3 { font-size: 1.5rem; color: var(--primary-orange); margin-bottom: 5px; }
@@ -726,7 +738,7 @@ textarea { resize: none; height: 80px; }
 .section-center-title { text-align: center; font-size: 3.5rem; margin-bottom: 80px; }
 .icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
 .icon-card { text-align: center; padding: 50px 30px; background: var(--card-inner-bg); border-radius: 30px; border: 2px solid transparent; transition: transform 0.4s var(--easing), border-color 0.4s, box-shadow 0.4s; }
-.icon-card:hover { transform: translateY(-10px); border-color: var(--primary-orange); box-shadow: 0 15px 40px rgba(0,0,0,0.08); background: white; }
+.icon-card:hover { transform: translateY(-10px); border-color: var(--primary-orange); box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); background: white; }
 .icon-wrapper { font-size: 2.5rem; margin-bottom: 25px; color: var(--text-dark); transition: color 0.3s; }
 .icon-card:hover .icon-wrapper { color: var(--primary-orange); }
 .icon-card h3 { font-size: 1.5rem; margin-bottom: 15px; }

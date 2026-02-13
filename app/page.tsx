@@ -168,12 +168,17 @@ export default function Home() {
   return (
     <>
       {/* PRELOADER */}
+      {/* --- NEW SPLIT PRELOADER WITH LOGO --- */}
       <div className={`preloader-container ${isLoaded ? 'loaded' : ''}`}>
         <div className="preloader-half top"></div>
         <div className="preloader-half bottom"></div>
-        <div className="preloader-logo">Shape Wellness</div>
+        
+        {/* REPLACED TEXT WITH IMAGE HERE */}
+        <div className="preloader-logo">
+           <img src="/assets/Shape Wellness Logo Final.png" alt="Shape Wellness Logo" />
+        </div>
       </div>
-
+      
       <Header />
 
       {/* MODAL (Moved outside header for cleaner React structure) */}

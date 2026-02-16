@@ -1,0 +1,868 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================= */
+:root {
+  --primary-orange: #F26522; 
+  --text-dark: #1a1a1a;
+  --text-light: #555;
+  --white: #FFFFFF;
+  --bg-off-white: #fcf9f7; 
+  --card-inner-bg: #f9f9f9; 
+  --footer-bg: #0F0F0F;
+  --easing: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { 
+    font-family: var(--font-manrope), sans-serif; 
+    line-height: 1.6; 
+    color: var(--text-dark); 
+    background: var(--bg-off-white); 
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Typography Defaults */
+h1, h2, h3, .logo, .section-title, .hero-title, .card-title, .intro-title { 
+    font-family: var(--font-playfair), serif; 
+}
+
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+section { padding: 100px 0; }
+
+/* =========================================
+   2. SHARED COMPONENTS (Header, Footer, Preloader)
+   ========================================= */
+
+/* --- PRELOADER --- */
+/* =========================
+   UPDATED PRELOADER (SPLIT + IMAGE LOGO)
+   ========================= */
+
+/* The main container holds everything */
+.preloader-container { 
+    position: fixed; 
+    inset: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: 9999; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    pointer-events: auto;
+}
+
+/* When loaded, allow clicking through */
+.preloader-container.loaded {
+    pointer-events: none;
+}
+
+/* The Two Background Halves */
+.preloader-half {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 51%; /* 51% ensures no tiny gap in the middle */
+    transition: transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+    will-change: transform;
+}
+
+/* Top Half - Orange */
+.preloader-half.top {
+    top: 0;
+    background: var(--primary-orange);
+    z-index: 1;
+}
+
+/* Bottom Half - White */
+.preloader-half.bottom {
+    bottom: 0;
+    background: var(--white);
+    z-index: 1;
+}
+
+/* --- LOGO STYLES (UPDATED FOR IMAGE) --- */
+.preloader-logo { 
+    position: relative;
+    z-index: 2;
+    /* Controls the size of the logo container */
+    width: 180px; 
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Ensures the image fits inside the container */
+.preloader-logo img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* --- EXIT ANIMATIONS --- */
+
+/* Slide Top Up */
+.preloader-container.loaded .preloader-half.top {
+    transform: translateY(-100%);
+}
+
+/* Slide Bottom Down */
+.preloader-container.loaded .preloader-half.bottom {
+    transform: translateY(100%);
+}
+
+/* Fade Out Logo */
+.preloader-container.loaded .preloader-logo {
+    opacity: 0;
+    transform: scale(0.8);
+}
+/* --- HEADER --- */
+header { 
+    position: fixed; width: 100%; top: 0; z-index: 1000; padding: 15px 0; transition: 0.3s; 
+    background: var(--text-dark); 
+    backdrop-filter: blur(10px); 
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1); 
+}
+.container { max-width: 1300px; margin: 0 auto; padding: 0 40px; }
+nav { display: flex; justify-content: space-between; align-items: center; }
+.logo-img { height: 80px; width: auto; display: block; object-fit: contain; }
+
+.nav-links { display: flex; gap: 30px; align-items: center; }
+.nav-links a { 
+    font-weight: 500; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; transition: color 0.3s; 
+    color: rgba(255,255,255,0.8); 
+}
+.nav-links a:hover, .nav-links a.active { color: var(--primary-orange); }
+
+.btn-appoint { 
+    background-color: var(--white); color: var(--text-dark); 
+    padding: 12px 30px; border-radius: 50px; font-weight: 600; cursor: pointer; border: none; font-size: 0.9rem; transition: 0.4s var(--easing); 
+}
+.btn-appoint:hover { background-color: var(--primary-orange); color: var(--white); transform: scale(1.05); }
+
+.mobile-toggle { display: none; font-size: 1.5rem; cursor: pointer; color: var(--white); }
+
+/* --- FOOTER --- */
+footer { background-color: var(--footer-bg); color: var(--white); padding: 100px 0 30px 0; position: relative; z-index: 20; }
+.footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 80px; }
+.footer-logo { font-size: 2.5rem;  margin-bottom: 20px; display: block; }
+.footer-links a { display: block; color: #888; margin-bottom: 12px; font-size: 1.1rem; transition: 0.3s; }
+.footer-links a:hover { color: var(--primary-orange); transform: translateX(5px); }
+.copyright { text-align: center; border-top: 1px solid #333; padding-top: 30px; color: #555; }
+
+/* --- MODAL --- */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+.modal-box { background: white; width: 900px; max-width: 95%; border-radius: 4px; display: flex; overflow: hidden; position: relative; animation: slideUp 0.4s var(--easing); }
+.modal-image { width: 40%; background-image: url('/assets/2025-09-21.webp'); background-size: cover; background-position: center; }
+.modal-form { width: 60%; padding: 50px; display: flex; flex-direction: column; justify-content: center; }
+.close-btn { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #999; z-index: 10; }
+.close-btn:hover { color: var(--primary-orange); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 8px; color: #888; text-transform: uppercase; }
+.input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; background: #f8f8f8; border: 1px solid #eee; font-family: 'Manrope', sans-serif; outline: none; transition: 0.3s; border-radius: 8px; }
+.input-group input:focus { border-color: var(--primary-orange); background: white; }
+.full-width { grid-column: span 2; }
+textarea { resize: none; height: 80px; }
+.success-message { display: none; text-align: center; width: 100%; padding: 40px; }
+.appoint-details { background: #f9f9f9; padding: 20px; margin-top: 20px; text-align: left; border-left: 4px solid var(--primary-orange); }
+@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+
+/* /* =========================================
+   3. HOME PAGE STYLES
+   ========================================= */
+
+/* --- HERO SECTION --- */
+.hero { 
+    position: relative; 
+    height: 100vh; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    padding: 0; 
+}
+
+.slider-container { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: 1; 
+}
+
+.slide { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-size: cover; 
+    background-position: center; 
+    opacity: 0; 
+    transform: scale(1.1); 
+    transition: opacity 1.5s ease-in-out, transform 8s linear; 
+}
+
+.slide.active { 
+    opacity: 1; 
+    transform: scale(1); 
+}
+
+.overlay { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)); 
+    z-index: 2; 
+}
+
+.hero-content { 
+    position: relative; 
+    z-index: 3; 
+    text-align: center; 
+    color: var(--white); 
+    max-width: 1000px; 
+    padding: 0 20px; 
+}
+
+.hero h1 { 
+    font-size: 5.5rem; 
+    line-height: 1.1; 
+    margin-bottom: 30px; 
+    opacity: 0; 
+    transform: translateY(50px); 
+    animation: fadeInUp 1s var(--easing) 0.5s forwards; 
+}
+
+.hero p { 
+    font-size: 1.4rem; 
+    font-weight: 300; 
+    opacity: 0; 
+    animation: fadeInUp 1s var(--easing) 0.8s forwards; 
+}
+
+@keyframes fadeInUp { 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* --- MARQUEE SECTION --- */
+.marquee-section { 
+    background: var(--primary-orange); 
+    padding: 20px 0; 
+    overflow: hidden; 
+    white-space: nowrap; 
+}
+
+.marquee-track { 
+    display: inline-block; 
+    animation: scrollLeft 20s linear infinite; 
+}
+
+.marquee-text { 
+    font-family: var(--font-playfair); 
+    font-size: 2rem; 
+    color: white; 
+    margin-right: 60px; 
+    font-style: italic; 
+    text-transform: uppercase; 
+}
+
+@keyframes scrollLeft { 
+    from { transform: translateX(0); } 
+    to { transform: translateX(-50%); } 
+}
+
+/* --- GENERAL WRAPPERS --- */
+.section-card-wrapper, .clinical-wrapper-card { 
+    background: var(--white); 
+    border-radius: 40px; 
+    padding: 60px; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05); 
+    overflow: hidden; 
+    position: relative; 
+    z-index: 1; 
+    width: 100%; 
+}
+
+/* --- JOURNEY / PHILOSOPHY SECTION --- */
+.journey { 
+    padding: 100px 0; 
+    background: var(--bg-off-white); 
+}
+
+.journey-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 80px; 
+    align-items: center; 
+    justify-content: center;
+}
+
+.journey-img-wrapper { 
+    height: 500px; 
+    width: 100%; 
+    overflow: hidden; 
+    position: relative; 
+    border-radius: 20px; 
+}
+
+.journey-img { 
+    width: 140%; 
+    height: 120%; 
+    background-image: url('/assets/Gemini_Generated_Image_yvy2dfyvy2dfyvy2.png'); 
+    background-size: cover; 
+    background-position: center; 
+    position: absolute; 
+    top: -10%; 
+    left: 0; 
+}
+
+/* Centered Philosophy Content Fix */
+.journey-content { 
+    text-align: center; 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+
+.journey-content h2 { 
+    font-size: 3.5rem; 
+    margin-bottom: 30px; 
+    color: var(--text-dark); 
+    justify-content: ;
+    
+}
+
+.journey-content p { 
+    font-size: 1.1rem; 
+    color: var(--text-light); 
+    margin-bottom: 40px; 
+    
+}
+
+.stats-box { 
+        display: flex;
+        flex-wrap: wrap;              /* Allows wrapping if screen is tiny */
+        justify-content: center;      /* Centers them perfectly */
+        gap: 20px !important;         /* Reduced from 60px to 20px */
+        width: 100%;
+        padding-top: 20px;
+    }
+.stat-item h3 { 
+    font-size: 3rem; 
+    color: var(--primary-orange); 
+    line-height: 1; 
+    margin-bottom: 5px; 
+}
+
+.stat-item span { 
+    font-size: 0.85rem; 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px; 
+}
+
+/* --- SIGNATURE & CLINICAL SERVICES --- */
+.services { 
+    padding: 100px 0; 
+    background: var(--bg-off-white); 
+    display: flex; 
+    justify-content: center; 
+}
+
+.clinical-services { 
+    padding: 80px 20px; 
+    background: var(--bg-off-white); 
+    display: flex; 
+    justify-content: center; 
+}
+
+/* Centered Section Header Fix */
+.section-header { 
+    text-align: center; 
+    margin-bottom: 60px; 
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-title { font-size: 4rem; margin-bottom: 10px; }
+.section-subtitle { font-size: 1.2rem; color: var(--primary-orange); letter-spacing: 2px; text-transform: uppercase; }
+
+/* HORIZONTAL SCROLL TRACKS */
+.signature-track, .clinical-track { 
+    display: flex; 
+    gap: 40px; 
+    padding: 40px 40px 20px 40px; 
+    width: max-content; 
+    will-change: transform; 
+    transition: transform 0.1s linear; 
+}
+
+/* INFO CARDS (Signature) */
+.info-card {
+    background: #f5f5f5; 
+    border-radius: 40px; 
+    width: 400px; 
+    flex-shrink: 0;
+    padding: 50px 30px; 
+    text-align: center;
+    transition: transform 0.4s var(--easing), box-shadow 0.4s, border-color 0.4s;
+    border: 2px solid transparent;
+}
+
+.info-card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55);
+    border-color: var(--primary-orange); 
+    
+}
+
+.card-icon { font-size: 3rem; margin-bottom: 20px; color: var(--text-dark); }
+.info-card h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--text-dark); }
+.info-card p { color: var(--text-light); font-size: 1rem; line-height: 1.6; }
+
+/* CLINICAL CARDS */
+.clinical-card { 
+    background: var(--card-inner-bg); 
+    border-radius: 30px; 
+    overflow: hidden; 
+    width: 350px; 
+    flex-shrink: 0; 
+    transition: transform 0.4s var(--easing), box-shadow 0.4s, border-color 0.4s; 
+    position: relative; 
+    border: 2px solid transparent; 
+}
+
+.clinical-card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    
+    border-color: var(--primary-orange); 
+}
+
+.clinical-img { height: 250px; width: 100%; background-size: cover; background-position: center; }
+.clinical-info { padding: 30px; }
+.clinical-info h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--text-dark); }
+.clinical-info p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 20px; }
+.clinical-link { color: var(--primary-orange); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* --- REVIEWS --- */
+.reviews { background: var(--white); }
+.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 40px; padding: 0 20px; }
+
+.review-card-outline { 
+    background: transparent; 
+    border: 1px solid var(--text-light); 
+    border-radius: 20px; 
+    padding: 40px; 
+    position: relative; 
+    transition: all 0.3s ease; 
+}
+
+.review-card-outline:hover { 
+    border-color: var(--primary-orange); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    background: var(--bg-off-white); 
+}
+
+.review-stars { color: #FFB400; font-size: 1.1rem; margin-bottom: 20px; }
+.review-text { font-family: var(--font-playfair), serif; font-style: italic; font-size: 1.3rem; color: var(--text-dark); margin-bottom: 30px; line-height: 1.6; }
+
+.review-author { display: flex; align-items: center; gap: 15px; }
+.author-avatar { width: 50px; height: 50px; border-radius: 50%; background: #eee; object-fit: cover; }
+.author-info h4 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+.author-info span { font-size: 0.85rem; color: var(--primary-orange); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+/* =========================================
+   4. TREATMENTS PAGE STYLES
+   ========================================= */
+
+/* --- HERO SECTION --- */
+.page-hero { 
+    padding: 180px 0 80px; 
+    text-align: center; 
+    background: var(--bg-off-white); 
+}
+
+.hero-subtitle { 
+    font-size: 1rem; 
+    color: var(--primary-orange); 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    font-weight: 700; 
+    display: block; 
+    margin-bottom: 20px; 
+}
+
+.hero-title { 
+    font-size: 4rem; 
+    line-height: 1.1; 
+    margin-bottom: 20px; 
+    max-width: 900px; 
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.hero-desc { 
+    font-size: 1.2rem; 
+    color: var(--text-light); 
+    max-width: 700px; 
+    margin: 0 auto; 
+}
+
+/* --- TREATMENT CARDS (Desktop Stacking Logic) --- */
+.treatment-section { 
+    padding: 60px 0 120px; 
+}
+
+.treatment-grid { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 40px; 
+    padding-bottom: 150px; 
+}
+
+.treatment-card {
+    background: var(--white);
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    border: 2px solid transparent; 
+    transition: transform 0.4s var(--easing), border-color 0.4s ease, box-shadow 0.4s ease;
+    
+    /* DESKTOP LAYOUT */
+    display: flex;
+    flex-direction: row; 
+    
+    /* STICKY STACKING MAGIC */
+    position: sticky;
+    top: 150px; 
+    width: 100%;
+    max-width: 900px; 
+    height: auto;
+    min-height: 350px;
+    transform-origin: center top;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Desktop Rotations for "Stack of Cards" Look */
+.treatment-card:nth-child(1) { z-index: 1; top: 140px; transform: rotate(-1deg); }
+.treatment-card:nth-child(2) { z-index: 2; top: 150px; transform: rotate(1.5deg); }
+.treatment-card:nth-child(3) { z-index: 3; top: 160px; transform: rotate(-1.5deg); }
+.treatment-card:nth-child(4) { z-index: 4; top: 170px; transform: rotate(1deg); }
+.treatment-card:nth-child(5) { z-index: 5; top: 180px; transform: rotate(-2deg); }
+.treatment-card:nth-child(6) { z-index: 6; top: 190px; transform: rotate(2deg); }
+.treatment-card:nth-child(7) { z-index: 7; top: 200px; transform: rotate(-1deg); }
+.treatment-card:nth-child(8) { z-index: 8; top: 210px; transform: rotate(1.5deg); }
+
+/* Desktop Hover Effect */
+.treatment-card:hover { 
+    margin-top: -10px; 
+   box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55);
+    border-color: var(--primary-orange); 
+}
+
+/* Internal Layout */
+.card-img-container { 
+    width: 45%; 
+    height: auto; 
+    min-height: 350px; 
+    overflow: hidden; 
+    position: relative; 
+}
+
+.card-img { 
+    width: 100%; 
+    height: 100%; 
+    background-size: cover; 
+    background-position: center; 
+    transition: transform 0.6s var(--easing); 
+}
+
+.treatment-card:hover .card-img { 
+    transform: scale(1.05); 
+}
+
+.card-content { 
+    width: 55%; 
+    padding: 50px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+}
+
+.card-category { 
+    font-size: 0.8rem; 
+    text-transform: uppercase; 
+    color: var(--primary-orange); 
+    font-weight: 700; 
+    letter-spacing: 1px; 
+    margin-bottom: 10px; 
+    display: block; 
+}
+
+.card-title { 
+    font-size: 2.2rem; 
+    margin-bottom: 15px; 
+    color: var(--text-dark); 
+    line-height: 1.2; 
+}
+
+.card-text { 
+    font-size: 1.1rem; 
+    color: var(--text-light); 
+    line-height: 1.7; 
+    margin-bottom: 30px; 
+}
+
+.btn-card-link { 
+    font-weight: 700; 
+    color: var(--text-dark); 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-size: 0.9rem; 
+    display: inline-flex; 
+    align-items: center; 
+    transition: color 0.3s; 
+}
+
+.btn-card-link i { 
+    margin-left: 8px; 
+    font-size: 0.8rem; 
+    transition: transform 0.3s; 
+}
+
+.treatment-card:hover .btn-card-link { 
+    color: var(--primary-orange); 
+}
+
+.treatment-card:hover .btn-card-link i { 
+    transform: translateX(5px); 
+}
+
+
+/* --- MOBILE STYLES (Fixed Text Breaking & Glitching) --- */
+@media (max-width: 900px) {
+
+    .treatment-grid { 
+        padding-bottom: 120px; 
+        gap: 20px; 
+        display: flex;
+        flex-direction: column;
+    }
+
+    .treatment-card { 
+        position: sticky;       /* Keep the sticky effect */
+        top: 100px;             /* Base sticky position */
+        left: 0;
+        
+        /* IMPORTANT: Remove Rotation & Translation to fix Text Glitch */
+        transform: none !important; 
+        will-change: auto;      /* Reset optimization that causes blur */
+        
+        width: 100%;
+        min-height: auto;
+        flex-direction: column;
+        margin-bottom: 30px;    /* Adds spacing between cards as you scroll */
+        
+        background: var(--white); /* Ensure background is solid */
+        z-index: 1;
+    }
+
+    /* STACKING EFFECT: 
+       We keep the 'deck of cards' feel by offsetting the 'top' slightly.
+       But we strictly remove 'rotate' to stop the layout from breaking.
+    */
+    .treatment-card:nth-child(1) { top: 100px; z-index: 1; }
+    .treatment-card:nth-child(2) { top: 115px; z-index: 2; } /* +15px gap */
+    .treatment-card:nth-child(3) { top: 130px; z-index: 3; }
+    .treatment-card:nth-child(4) { top: 145px; z-index: 4; }
+    .treatment-card:nth-child(5) { top: 160px; z-index: 5; }
+    .treatment-card:nth-child(6) { top: 175px; z-index: 6; }
+    .treatment-card:nth-child(7) { top: 190px; z-index: 7; }
+    .treatment-card:nth-child(8) { top: 205px; z-index: 8; }
+
+    /* Disable Desktop Hover Effects on Mobile */
+    .treatment-card:hover { 
+        margin-top: 0; 
+        box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    }
+
+    /* Mobile Content Adjustments */
+    .card-img-container { width: 100%; height: 250px; }
+    .card-content { width: 100%; padding: 30px 20px; }
+    .card-title { font-size: 1.8rem; }
+    .card-text { font-size: 1rem; }
+}
+/* =========================================
+   5. EXPERIENCE PAGE STYLES
+   ========================================= */
+.page-header { padding: 180px 0 80px; text-align: center; }
+.page-header h1 { font-size: 4rem; margin-bottom: 20px; }
+.page-header p { font-size: 1.2rem; color: var(--text-light); max-width: 700px; margin: 0 auto; }
+
+.transform-section { padding: 80px 0; }
+.transform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 60px; text-align: center; }
+.transform-card { padding: 20px; transition: transform 0.3s var(--easing); }
+
+.circle-image { width: 250px; height: 250px; border-radius: 50%; overflow: hidden; margin: 0 auto 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 5px solid white; transition: border-color 0.4s ease, transform 0.4s ease; }
+.circle-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--easing); }
+.transform-card:hover .circle-image { border-color: var(--primary-orange);box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); transform: scale(1.02); }
+.transform-card:hover .circle-image img { transform: scale(1.1); }
+.transform-card p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 15px; min-height: 80px; }
+.transform-card h3 { font-size: 1.5rem; color: var(--primary-orange); margin-bottom: 5px; }
+.transform-card span { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-dark); }
+
+.before-after-section { padding: 100px 0; background: var(--white); }
+.section-center-title { text-align: center; font-size: 3.5rem; margin-bottom: 80px; }
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
+.icon-card { text-align: center; padding: 50px 30px; background: var(--card-inner-bg); border-radius: 30px; border: 2px solid transparent; transition: transform 0.4s var(--easing), border-color 0.4s, box-shadow 0.4s; }
+.icon-card:hover { transform: translateY(-10px); border-color: var(--primary-orange); box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); background: white; }
+.icon-wrapper { font-size: 2.5rem; margin-bottom: 25px; color: var(--text-dark); transition: color 0.3s; }
+.icon-card:hover .icon-wrapper { color: var(--primary-orange); }
+.icon-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+.btn-outline-small { padding: 12px 30px; border: 1px solid var(--text-dark); border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: 0.3s; display: inline-block; background: transparent; color: var(--text-dark); }
+.icon-card:hover .btn-outline-small { background: var(--primary-orange); border-color: var(--primary-orange); color: white; }
+
+.reviews-section { padding: 100px 0; background: var(--bg-off-white); }
+.reviews-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 50px; }
+.review-card { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); position: relative; border: 1px solid transparent; transition: all 0.3s ease; }
+.review-card:hover { border-color: var(--primary-orange); transform: translateY(-5px); }
+.stars { color: #FFB400; margin-bottom: 15px; font-size: 0.9rem; }
+.reviewer-meta { display: flex; align-items: center; gap: 15px; }
+.reviewer-img { width: 45px; height: 45px; border-radius: 50%; background: #eee; object-fit: cover; }
+.reviewer-info h4 { font-size: 0.95rem; font-weight: 700; margin: 0; }
+.reviewer-info span { font-size: 0.8rem; color: var(--primary-orange); text-transform: uppercase; }
+
+.add-review-section { padding: 80px 0 120px; }
+.review-form-box { background: var(--white); max-width: 800px; margin: 0 auto; padding: 60px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+.form-title { text-align: center; margin-bottom: 40px; }
+.form-group { margin-bottom: 20px; }
+.form-control { width: 100%; padding: 15px; border: 1px solid #eee; border-radius: 8px; font-family: var(--font-manrope); font-size: 1rem; outline: none; transition: 0.3s; }
+.form-control:focus { border-color: var(--primary-orange); }
+.rating-select { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+.rating-star { font-size: 1.5rem; color: #ddd; cursor: pointer; transition: 0.2s; }
+.rating-star:hover, .rating-star.active { color: #FFB400; }
+.btn-submit { width: 100%; padding: 18px; background: var(--text-dark); color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+.btn-submit:hover { background: var(--primary-orange); }
+
+
+/* =========================================
+   6. ABOUT PAGE STYLES
+   ========================================= */
+.about-hero { padding: 180px 0 80px; text-align: center; }
+.card-section { padding: 60px 0; }
+.content-card { background: var(--white); border-radius: 30px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; box-shadow: 0 10px 40px rgba(0,0,0,0.03); border: 2px solid transparent; transition: transform 0.4s var(--easing), box-shadow 0.4s var(--easing), border-color 0.4s; }
+.content-card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.08); border-color: var(--primary-orange); }
+.card-text { padding: 80px; display: flex; flex-direction: column; justify-content: center; }
+.card-desc { font-size: 1.1rem; color: var(--text-light); margin-bottom: 40px; line-height: 1.8; }
+.card-image-wrapper { position: relative; overflow: hidden; height: 100%; min-height: 500px; }
+.card-img { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 1.2s var(--easing); }
+.content-card:hover .card-img { transform: scale(1.05); }
+.content-card.reversed { direction: rtl; }
+.content-card.reversed .card-text { direction: ltr; }
+.journey-graphic { position: relative; height: 100%; min-height: 500px; display: flex; justify-content: center; align-items: center; background: #E8CDB6; }
+.journey-graphic h2 { font-size: 4rem; z-index: 2; position: relative; font-family: var(--font-manrope); font-weight: 600; color: #5a4a3a; }
+.shadow-overlay { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%) rotate(45deg); width: 150px; height: 400px; background: rgba(0,0,0,0.1); filter: blur(20px); z-index: 1; pointer-events: none; }
+.btn-outline { display: inline-block; padding: 15px 40px; border: 1px solid var(--text-dark); border-radius: 50px; font-weight: 600; font-size: 0.95rem; color: var(--text-dark); transition: all 0.3s var(--easing); width: fit-content; }
+.btn-outline:hover { background: var(--primary-orange); border-color: var(--primary-orange); color: white; }
+
+
+/* =========================================
+   7. CONTACT PAGE STYLES
+   ========================================= */
+.contact-page-section { padding: 140px 0 100px; }
+.intro-section { text-align: center; margin-bottom: 80px; }
+.intro-text { font-size: 1.2rem; color: var(--text-light); max-width: 900px; margin: 0 auto; line-height: 1.8; }
+.location-header-btn { background-color: var(--primary-orange); color: white; padding: 15px 40px; border-radius: 50px; font-weight: 700; font-size: 1.2rem; display: table; margin: 0 auto 40px auto; box-shadow: 0 5px 15px rgba(242, 101, 34, 0.3); }
+.contact-split-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.08); border-radius: 20px; overflow: hidden; margin-bottom: 120px; border: 2px solid transparent; transition: border-color 0.4s; }
+.contact-split-layout:hover { border-color: var(--primary-orange); }
+.map-container iframe { width: 100%; height: 100%; min-height: 600px; border: none; }
+.contact-info-container { background: var(--bg-off-white); display: flex; flex-direction: column; }
+.contact-header-image { width: 100%; height: 250px; background-image: url('/assets/2025-09-21.webp'); background-size: cover; background-position: center; position: relative; }
+.contact-header-image::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.4); }
+.brand-overlay-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-family: var(--font-playfair); font-size: 3rem; z-index: 2; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+.contact-details-list { padding: 50px; list-style: none; }
+.contact-details-list li { display: flex; align-items: flex-start; margin-bottom: 35px; font-size: 1.1rem; color: var(--text-dark); }
+.contact-icon-wrapper { margin-right: 20px; color: var(--primary-orange); font-size: 1.4rem; padding-top: 4px; }
+.booking-section { background: var(--white); padding-bottom: 100px; }
+.booking-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 80px; align-items: start; }
+.inline-booking-box { background: var(--bg-off-white); padding: 50px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); border: 2px solid transparent; transition: border-color 0.4s, transform 0.4s; }
+.inline-booking-box:hover { border-color: var(--primary-orange); transform: translateY(-5px); }
+
+
+/* =========================================
+   8. MOBILE RESPONSIVE OVERRIDES
+   ========================================= */
+@media (max-width: 900px) {
+    .container { padding: 0 20px; }
+    section { padding: 60px 0; }
+    
+    /* Nav */
+    .mobile-toggle { display: block; }
+    .nav-links { position: fixed; top: 80px; left: 0; width: 100%; background: var(--text-dark); flex-direction: column; align-items: center; padding: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: none; }
+    .nav-links.active { display: flex; }
+    .btn-appoint { display: none; } 
+
+    /* Typography */
+    .hero h1, .page-header h1, .hero-title, .intro-title { font-size: 2.8rem !important; line-height: 1.2; }
+    .hero p, .page-header p, .hero-desc, .intro-text { font-size: 1rem; }
+    .section-title, .section-center-title { font-size: 2.5rem; }
+
+    /* Layout Grids */
+    .journey-grid, .transform-grid, .icon-grid, .reviews-container, .footer-grid, .treatment-grid, .contact-split-layout, .booking-layout { 
+        grid-template-columns: 1fr !important; gap: 40px; 
+    }
+    .footer-grid { text-align: center; }
+
+    /* Treatments Mobile Logic */
+    .treatment-grid { padding-bottom: 150px; }
+    .treatment-card { flex-direction: column; top: 80px; min-height: auto; }
+    .treatment-card:nth-child(1) { top: 80px; transform: rotate(-0.5deg); }
+    .treatment-card:nth-child(2) { top: 90px; transform: rotate(0.5deg); }
+    /* ... (rest of rotation logic same as above) ... */
+    .card-img-container { width: 100%; height: 250px; }
+    .card-content { width: 100%; padding: 30px 25px; }
+
+    /* About Mobile Logic */
+    .content-card, .content-card.reversed { grid-template-columns: 1fr; direction: ltr; border-radius: 20px; }
+    .card-text { padding: 40px 25px; }
+    .card-image-wrapper, .journey-graphic { min-height: 300px; height: 300px; }
+    
+    /* Scroll Sections */
+    .clinical-wrapper-card, #signatureWrapper { padding: 40px 0; border-radius: 20px; overflow: hidden; }
+    .signature-track, .clinical-track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding: 40px 20px 30px 20px; width: 100%; gap: 20px; transform: none !important; justify-content: flex-start; }
+    .signature-track::-webkit-scrollbar, .clinical-track::-webkit-scrollbar { display: none; }
+    
+    /* Force ScrollReveal Visibility on Mobile */
+    .info-card, .clinical-card { flex: 0 0 auto; width: 280px; scroll-snap-align: start; opacity: 1 !important; visibility: visible !important; transform: none !important; }
+
+    /* Form & Modal */
+    .modal-box { flex-direction: column; width: 95%; max-height: 90vh; overflow-y: auto; }
+    .modal-image { display: none; }
+    .modal-form { width: 100%; padding: 30px; }
+    .form-grid { grid-template-columns: 1fr; gap: 0; }
+    .full-width { grid-column: span 1; }
+    .review-form-box { padding: 30px 20px; }
+}

@@ -1,5 +1,6 @@
 "use client";
 import { useState, useCallback } from 'react';
+import Image from 'next/image';
 
 interface ModalProps {
   isOpen: boolean;
@@ -7,6 +8,7 @@ interface ModalProps {
 }
 
 export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
+  // --- 1. HOOKS AT TOP (Prevents React Hook Order Errors) ---
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [formData, setFormData] = useState({
@@ -40,7 +42,7 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
+    <div className="modal-overlay" onClick={handleClose} aria-modal="true" role="dialog">
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         
         {/* HEADER */}
@@ -50,8 +52,16 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
             <h2 className="txt-orange">APPOINTMENT</h2>
           </div>
           <div className="header-right">
-            <img src="/assets/Shape Wellness Logo Final.png" alt="Logo" className="logo-img" />
-            <button className="close-x" onClick={handleClose}>&times;</button>
+            {/* Optimized Logo with fetchPriority */}
+            <Image 
+              src="/assets/Shape Wellness Logo Final.png" 
+              alt="Shape Wellness Logo" 
+              width={150} 
+              height={30} 
+              className="logo-img"
+              fetchPriority="high"
+            />
+            <button className="close-x" onClick={handleClose} aria-label="Close modal">&times;</button>
           </div>
         </header>
 
@@ -60,29 +70,38 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
           {!isSubmitted ? (
             <>
               <div className="image-side">
-                <img src="/assets/2025-09-21.webp" alt="Reception" className="side-img" />
+                {/* Optimized Hero Image with priority loading */}
+                <Image 
+                  src="/assets/2025-09-21.webp" 
+                  alt="Clinic Reception" 
+                  width={400} 
+                  height={350} 
+                  className="side-img"
+                  priority
+                />
               </div>
 
               <form className="appointment-form" onSubmit={handleConfirm}>
                 <div className="form-row">
                   <div className="field">
-                    <label>NAME</label>
-                    <input type="text" name="cName" placeholder="Full name" required />
+                    <label htmlFor="cName">NAME</label>
+                    <input type="text" id="cName" name="cName" placeholder="Full name" required autoComplete="name" />
                   </div>
                   <div className="field">
-                    <label>PHONE</label>
-                    <input type="tel" name="cPhone" placeholder="Enter Phone No" required />
+                    <label htmlFor="cPhone">PHONE</label>
+                    <input type="tel" id="cPhone" name="cPhone" placeholder="Enter Phone No" required autoComplete="tel" />
                   </div>
                 </div>
                 
                 <div className="form-row">
                   <div className="field">
-                    <label>DATE</label>
-                    <input type="date" name="cDate" required />
+                    <label htmlFor="cDate">DATE</label>
+                    <input type="date" id="cDate" name="cDate" required />
                   </div>
                   <div className="field">
-                    <label>SERVICE</label>
+                    <label htmlFor="cService">SERVICE</label>
                     <select 
+                      id="cService"
                       name="cService" 
                       required 
                       value={selectedService} 
@@ -102,14 +121,14 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
 
                 {selectedService === "Other" && (
                   <div className="field reveal-animation">
-                    <label>PLEASE SPECIFY SERVICE</label>
-                    <input type="text" name="cOtherText" placeholder="e.g. Specialized Facial" required />
+                    <label htmlFor="cOtherText">PLEASE SPECIFY SERVICE</label>
+                    <input type="text" id="cOtherText" name="cOtherText" placeholder="e.g. Specialized Facial" required />
                   </div>
                 )}
 
                 <div className="field">
-                  <label>MESSAGE (OPTIONAL)</label>
-                  <textarea name="cMessage" placeholder="Tell us more about your concerns..." rows={3}></textarea>
+                  <label htmlFor="cMessage">MESSAGE (OPTIONAL)</label>
+                  <textarea id="cMessage" name="cMessage" placeholder="Tell us more about your concerns..." rows={3}></textarea>
                 </div>
                 
                 <div className="form-footer">
@@ -119,7 +138,7 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
             </>
           ) : (
             <div className="success-container">
-              <i className="fas fa-check-circle success-icon"></i>
+              <i className="fas fa-check-circle success-icon" aria-hidden="true"></i>
               <h2 className="success-title">Confirmed!</h2>
               <div className="appoint-details">
                 <p><strong>Booking ID:</strong> <span className="brand-orange">{formData.id}</span></p>
@@ -135,7 +154,7 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
       <style jsx>{`
         .modal-overlay {
           position: fixed;
-          top: 0;width: 100vw; height: 100vh;
+          top: 0; left: 0; width: 100vw; height: 100vh;
           background: rgba(0, 0, 0, 0.85);
           backdrop-filter: blur(8px);
           display: flex; justify-content: center; align-items: center;
@@ -146,7 +165,6 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
           background: #fff;
           width: 100%;
           max-width: 950px;
-          /* Removed fixed height to prevent cutting off fields */
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -158,24 +176,24 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
           display: flex; 
           justify-content: space-between; 
           align-items: center; 
-          padding: 40px 60px; 
+          padding: 20px 40px; 
           background: #1a1a1a;
         }
 
         .txt-orange { font-family: serif; font-size: 22px; color: #e65100; margin: 0; font-weight: 700; line-height: 1.2; }
         .header-right { display: flex; align-items: center; gap: 20px; }
-        .logo-img { height: 30px; filter: brightness(0) invert(1); }
+        .logo-img { height: auto; filter: brightness(0) invert(1); }
         .close-x { font-size: 30px; border: none; background: none; cursor: pointer; color: #fff; line-height: 1; }
 
         .modal-body { 
           display: grid; 
-          grid-template-columns: 1fr 1.2fr; 
+          grid-template-columns: ${isSubmitted ? '1fr' : '1fr 1.2fr'}; 
           padding: 30px 40px;
           gap: 30px;
           align-items: start;
         }
         
-        .image-side { width: 100%; height: 100%; }
+        .image-side { width: 100%; height: auto; }
         .side-img { width: 100%; height: auto; border-radius: 12px; object-fit: cover; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }

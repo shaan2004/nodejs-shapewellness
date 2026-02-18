@@ -9,11 +9,14 @@ export default function Footer() {
           {/* Column 1: Logo & Tagline */}
           <div className="footer-col">
             <img 
-              src="/assets/Shape Wellness Logo Final.png" 
-              alt="Shape Wellness" 
-              className="logo-img" 
-              style={{height: '50px', marginBottom: '20px'}} 
-            />
+  src="/assets/Shape Wellness Logo Final.png" 
+  alt="Shape Wellness Logo" 
+  width={150} // Pass as number
+  height={80} // Pass as number
+  fetchPriority="high" // Correct camelCase
+  loading="eager" 
+  style={{ width: '110px', height: '80px' }} 
+/>
             <p style={{color: '#666'}}>Redefining beauty standards through science.</p>
           </div>
 

@@ -145,8 +145,8 @@ export default function Treatments() {
                 { title: "Laser Hair Removal", cat: "Laser Technology", img: "/assets/laser.webp", text: "Experience pain-free, long-lasting hair reduction using state-of-the-art diode laser technology." },
                 { title: "Acne Treatment", cat: "Dermatology", img: "/assets/acne.webp", text: "Customized chemical peels and medical facials to target active acne and reduce inflammation." },
                 { title: "Body Contouring", cat: "Body Sculpting", img: "/assets/body.webp", text: "Non-invasive fat reduction technologies to shape, tone, and firm stubborn areas." },
-                { title: "Dental Aesthetics", cat: "Smile Care", img: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80", text: "Comprehensive dental solutions including teeth whitening and veneers to perfect your smile." },
-                { title: "Bridal Packages", cat: "Special Occasion", img: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80", text: "Curated pre-bridal packages to make you shine on your big day." }
+                { title: "Dental Aesthetics", cat: "Smile Care", img: "/assets/dental aesthetic.webp", text: "Comprehensive dental solutions including teeth whitening and veneers to perfect your smile." },
+                { title: "Bridal Packages", cat: "Special Occasion", img: "/assets/bridal.webp", text: "Curated pre-bridal packages to make you shine on your big day." }
               ].map((item, index) => (
                 <div 
                   className="treatment-card" 

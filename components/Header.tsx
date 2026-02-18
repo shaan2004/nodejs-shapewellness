@@ -26,7 +26,15 @@ export default function Header() {
       <div className="container">
         <nav>
           <Link href="/" className="logo">
-            <img src="/assets/Shape Wellness Logo Final.png" alt="Shape Wellness" className="logo-img" />
+           <img 
+  src="/assets/Shape Wellness Logo Final.png" 
+  alt="Shape Wellness Logo" 
+  width={150} // Pass as number
+  height={80} // Pass as number
+  fetchPriority="high" // Correct camelCase
+  loading="eager" 
+  style={{ width: '150px', height: '80px' }} 
+/>
           </Link>
           
           <div className="mobile-toggle" onClick={toggleMenu}>

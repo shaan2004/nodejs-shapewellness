@@ -173,7 +173,15 @@ export default function Home() {
         <div className="preloader-half top"></div>
         <div className="preloader-half bottom"></div>
         <div className="preloader-logo">
-           <img src="/assets/Shape Wellness Logo Final.png" alt="Shape Wellness Logo" loading="eager" />
+          <img 
+  src="/assets/Shape Wellness Logo Final.png" 
+  alt="Shape Wellness Logo" 
+  width={150} // Pass as number
+  height={80} // Pass as number
+  fetchPriority="high" // Correct camelCase
+  loading="eager" 
+  
+/>
         </div>
       </div>
       

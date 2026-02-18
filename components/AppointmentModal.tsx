@@ -8,7 +8,7 @@ interface ModalProps {
 }
 
 export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
-  // --- 1. HOOKS AT TOP (Prevents React Hook Order Errors) ---
+  // --- 1. HOOKS AT TOP ---
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [formData, setFormData] = useState({
@@ -45,22 +45,24 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
     <div className="modal-overlay" onClick={handleClose} aria-modal="true" role="dialog">
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         
-        {/* HEADER */}
+        {/* HEADER - Specific Layout: Logo (Left) | Text (Center) | Close (Right) */}
         <header className="modal-header">
-          <div className="title-group">
-            <h2 className="txt-orange">MAKE AN</h2>
-            <h2 className="txt-orange">APPOINTMENT</h2>
-          </div>
-          <div className="header-right">
-            {/* Optimized Logo with fetchPriority */}
+          <div className="header-left">
             <Image 
               src="/assets/Shape Wellness Logo Final.png" 
               alt="Shape Wellness Logo" 
-              width={150} 
-              height={30} 
+              width={120} 
+              height={24} 
               className="logo-img"
               fetchPriority="high"
             />
+          </div>
+          
+          <div className="header-center">
+            <h2 className="txt-orange">MAKE AN APPOINTMENT</h2>
+          </div>
+          
+          <div className="header-right">
             <button className="close-x" onClick={handleClose} aria-label="Close modal">&times;</button>
           </div>
         </header>
@@ -70,7 +72,6 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
           {!isSubmitted ? (
             <>
               <div className="image-side">
-                {/* Optimized Hero Image with priority loading */}
                 <Image 
                   src="/assets/2025-09-21.webp" 
                   alt="Clinic Reception" 
@@ -173,17 +174,24 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
         }
 
         .modal-header { 
-          display: flex; 
-          justify-content: space-between; 
+          display: grid; 
+          grid-template-columns: 1fr auto 1fr; /* Logic for Logo (left) | Text (Center) | Close (Right) */
+          margin-top:60px;
+          max-width: 950px;
+          border-radius: 12px;
           align-items: center; 
           padding: 20px 40px; 
           background: #1a1a1a;
+          width: 100%;
         }
 
-        .txt-orange { font-family: serif; font-size: 22px; color: #e65100; margin: 0; font-weight: 700; line-height: 1.2; }
-        .header-right { display: flex; align-items: center; gap: 20px; }
+        .header-left { display: flex; justify-content: flex-start; }
+        .header-center { display: flex; justify-content: center; }
+        .header-right { display: flex; justify-content: flex-end; }
+
+        .txt-orange { font-family: serif; font-size: 22px; color: #e65100; margin: 0; font-weight: 700; line-height: 1.2; text-align: center; }
         .logo-img { height: auto; filter: brightness(0) invert(1); }
-        .close-x { font-size: 30px; border: none; background: none; cursor: pointer; color: #fff; line-height: 1; }
+        .close-x { font-size: 35px; border: none; background: none; cursor: pointer; color: #fff; line-height: 1; }
 
         .modal-body { 
           display: grid; 
@@ -228,6 +236,11 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
 
         @media (max-width: 850px) {
           .modal-box { max-height: 90vh; overflow-y: auto; }
+          .modal-header { 
+             grid-template-columns: 1fr 1fr; /* Logo and Close only for mobile to save space */
+             padding: 15px 20px;
+          }
+          .header-center { display: none; } /* Hide center text on small mobile screens to prevent overlap */
           .modal-body { grid-template-columns: 1fr; padding: 20px; }
           .image-side { display: none; }
           .form-row { grid-template-columns: 1fr; gap: 0; }

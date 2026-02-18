@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Lenis from 'lenis';
@@ -9,18 +9,16 @@ export default function Home() {
   // --- STATE MANAGEMENT ---
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState<{id: string, date: string, time: string, service: string} | null>(null);
 
-  // --- REFS FOR ANIMATIONS ---
+  // --- REFS ---
   const journeySectionRef = useRef<HTMLElement>(null);
   const journeyImgRef = useRef<HTMLDivElement>(null);
   const reviewSectionRef = useRef<HTMLElement>(null);
   const reviewBgRef = useRef<HTMLDivElement>(null);
   
-  // Refs for Horizontal Pan Effect
   const sigWrapperRef = useRef<HTMLDivElement>(null);
   const sigTrackRef = useRef<HTMLDivElement>(null);
   const clinWrapperRef = useRef<HTMLDivElement>(null);
@@ -32,13 +30,13 @@ export default function Home() {
     '/assets/shapewellness.webp'
   ];
 
-  // --- EFFECT: PRELOADER ---
+  // --- PRELOADER ---
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // --- EFFECT: HERO SLIDER ---
+  // --- HERO SLIDER ---
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length);
@@ -46,48 +44,51 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [heroImages.length]);
 
-  // --- EFFECT: SCROLL LOGIC (Lenis, Parallax, ScrollReveal) ---
+  // --- CORE ANIMATION & SCROLL LOGIC ---
   useEffect(() => {
-    // 1. Init Lenis
+    // 1. Init Lenis for smooth scrolling
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     });
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
-    // 2. Scroll Event Listener (Parallax)
+    // 2. Optimized Scroll Listener
     const handleScroll = () => {
-      // Journey Parallax
-      if (journeySectionRef.current && journeyImgRef.current && window.innerWidth > 900) {
-        const rect = journeySectionRef.current.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          journeyImgRef.current.style.transform = `translateY(${rect.top * 0.15}px)`;
+      // Use MatchMedia for better performance than window.innerWidth checks
+      if (window.matchMedia('(min-width: 900px)').matches) {
+        // Journey Parallax
+        if (journeySectionRef.current && journeyImgRef.current) {
+          const rect = journeySectionRef.current.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            journeyImgRef.current.style.transform = `translate3d(0, ${rect.top * 0.15}px, 0)`;
+          }
         }
-      }
 
-      // Reviews Parallax (The moving photo effect)
-      if (reviewSectionRef.current && reviewBgRef.current && window.innerWidth > 900) {
-        const rect = reviewSectionRef.current.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          const yPos = rect.top * 0.15;
-          reviewBgRef.current.style.transform = `translateY(${yPos}px)`;
+        // Reviews Parallax
+        if (reviewSectionRef.current && reviewBgRef.current) {
+          const rect = reviewSectionRef.current.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom > 0) {
+            reviewBgRef.current.style.transform = `translate3d(0, ${rect.top * 0.15}px, 0)`;
+          }
         }
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
-    // 3. Init ScrollReveal
-    import('scrollreveal').then((module) => {
-      const ScrollReveal = module.default;
-      const sr = ScrollReveal({
+    // 3. Conditional ScrollReveal
+    const initSR = async () => {
+      const module = await import('scrollreveal');
+      const sr = module.default({
         origin: 'bottom',
-        distance: '60px',
+        distance: '40px',
         duration: 1000,
         delay: 200,
         easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -99,32 +100,33 @@ export default function Home() {
       sr.reveal('.journey-img-wrapper', { origin: 'right' });
       sr.reveal('.section-header, .section-title');
       
-      // Only animate cards on desktop to avoid layout shifts on mobile
-      if (window.innerWidth > 900) {
+      if (window.matchMedia('(min-width: 900px)').matches) {
         sr.reveal('.info-card', { interval: 100 });
         sr.reveal('.clinical-card', { interval: 100 });
       }
       
       sr.reveal('.review-card-outline', { interval: 100 });
-      sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '30px' });
-    });
+      sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '20px' });
+    };
+
+    initSR();
 
     return () => {
       lenis.destroy();
+      cancelAnimationFrame(rafId);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
-  // --- EFFECT: HORIZONTAL MOUSE PAN ---
+  // --- HORIZONTAL MOUSE PAN ---
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent, wrapper: HTMLElement, track: HTMLElement) => {
-      if (window.innerWidth > 900) {
+    const handleMouseMove = (e: MouseEvent, track: HTMLElement) => {
+      if (window.matchMedia('(min-width: 900px)').matches) {
         const percentage = e.clientX / window.innerWidth;
         const maxScroll = track.scrollWidth - window.innerWidth + 150;
-        // Ensure maxScroll isn't negative
         if (maxScroll > 0) {
-            const x = percentage * maxScroll * -1;
-            track.style.transform = `translateX(${x}px)`;
+          const x = percentage * maxScroll * -1;
+          track.style.transform = `translate3d(${x}px, 0, 0)`;
         }
       }
     };
@@ -134,24 +136,22 @@ export default function Home() {
     const clinWrap = clinWrapperRef.current;
     const clinTrack = clinTrackRef.current;
 
-    const sigHandler = (e: MouseEvent) => { if(sigWrap && sigTrack) handleMouseMove(e, sigWrap, sigTrack) };
-    const clinHandler = (e: MouseEvent) => { if(clinWrap && clinTrack) handleMouseMove(e, clinWrap, clinTrack) };
+    const onSigMove = (e: MouseEvent) => sigTrack && handleMouseMove(e, sigTrack);
+    const onClinMove = (e: MouseEvent) => clinTrack && handleMouseMove(e, clinTrack);
 
-    if (sigWrap) sigWrap.addEventListener('mousemove', sigHandler);
-    if (clinWrap) clinWrap.addEventListener('mousemove', clinHandler);
+    sigWrap?.addEventListener('mousemove', onSigMove);
+    clinWrap?.addEventListener('mousemove', onClinMove);
 
     return () => {
-      if (sigWrap) sigWrap.removeEventListener('mousemove', sigHandler);
-      if (clinWrap) clinWrap.removeEventListener('mousemove', clinHandler);
+      sigWrap?.removeEventListener('mousemove', onSigMove);
+      clinWrap?.removeEventListener('mousemove', onClinMove);
     };
   }, []);
-
 
   // --- HANDLERS ---
   const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
     setBookingSuccess({
       id: "#SW" + Math.floor(Math.random() * 9000),
       date: formData.get('pDate') as string,
@@ -160,90 +160,86 @@ export default function Home() {
     });
   };
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setBookingSuccess(null);
-  };
+    setSelectedService("");
+  }, []);
 
   return (
     <>
       {/* PRELOADER */}
-      {/* --- NEW SPLIT PRELOADER WITH LOGO --- */}
       <div className={`preloader-container ${isLoaded ? 'loaded' : ''}`}>
         <div className="preloader-half top"></div>
         <div className="preloader-half bottom"></div>
-        
-        {/* REPLACED TEXT WITH IMAGE HERE */}
         <div className="preloader-logo">
-           <img src="/assets/Shape Wellness Logo Final.png" alt="Shape Wellness Logo" />
+           <img src="/assets/Shape Wellness Logo Final.png" alt="Shape Wellness Logo" loading="eager" />
         </div>
       </div>
       
       <Header />
 
-      {/* MODAL (Moved outside header for cleaner React structure) */}
+      {/* MODAL */}
       {isModalOpen && (
         <div className="modal-overlay" style={{ display: 'flex' }}>
-          <div className="modal-box">
-            <span className="close-btn" onClick={closeModal}>×</span>
-            
-            {/* Form Section */}
-            {!bookingSuccess && (
-              <>
-                <div className="modal-image"></div>
-                <div className="modal-form" id="modalFormSection">
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
-                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
-                  <form onSubmit={handleBooking}>
-                    <div className="form-grid">
-                      <div className="input-group"><label>Name</label><input type="text" name="pName" required /></div>
-                      <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" required /></div>
-                      <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
-                      <div className="input-group"><label>Time</label><input type="time" name="pTime" required /></div>
-                      <div className="input-group full-width">
-                        <label>Service</label>
-                        <select name="pService">
-                          <option>Slimming</option>
-                          <option>Skin Care</option>
-                          <option>Hair Restoration</option>
-                          <option>Laser Tech</option>
-                          <option>Dental Aesthetics</option>
-                          <option>Bridal Studio</option>
-                        </select>
-                      </div>
-                      <div className="input-group full-width"><label>Message</label><textarea name="pMessage" placeholder="Any specific concerns?"></textarea></div>
-                    </div>
-                    <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '10px' }}>Confirm Booking</button>
-                  </form>
-                </div>
-              </>
-            )}
+          <div className="modal-form">
+  <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
+  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
+  
+  <form onSubmit={handleBooking}>
+    <div className="form-grid">
+      <div className="input-group"><label>Name</label><input type="text" name="pName" placeholder="Full name" required /></div>
+      <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" placeholder="Enter Phone No" required /></div>
+      <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
+      
+      {/* Updated Service Selection */}
+      <div className="input-group">
+        <label>Service</label>
+        <select 
+          name="pService" 
+          required 
+          value={selectedService}
+          onChange={(e) => setSelectedService(e.target.value)}
+          className="custom-select"
+        >
+          <option value="" disabled>Select a service</option>
+          <option value="Slimming">Slimming</option>
+          <option value="Skin Care">Skin Care</option>
+          <option value="Hair Restoration">Hair Restoration</option>
+          <option value="Laser Tech">Laser Tech</option>
+          <option value="Dental Aesthetics">Dental Aesthetics</option>
+          <option value="Bridal Studio">Bridal Studio</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
-            {/* Success Section */}
-            {bookingSuccess && (
-              <div className="success-message" style={{ display: 'block', width: '100%' }}>
-                <i className="fas fa-check-circle" style={{ fontSize: '50px', color: 'var(--primary-orange)', marginBottom: '20px' }}></i>
-                <h2 style={{ fontFamily: "'Playfair Display', serif" }}>Appointment Confirmed!</h2>
-                <p style={{ color: '#666' }}>Thank you. Your consultation is booked.</p>
-                <div className="appoint-details">
-                  <p><strong>ID:</strong> <span style={{ color: 'var(--primary-orange)' }}>{bookingSuccess.id}</span></p>
-                  <p><strong>Date:</strong> <span>{bookingSuccess.date}</span></p>
-                  <p><strong>Time:</strong> <span>{bookingSuccess.time}</span></p>
-                  <p><strong>Service:</strong> <span>{bookingSuccess.service}</span></p>
-                </div>
-                <button className="btn-appoint" onClick={closeModal} style={{ marginTop: '20px' }}>Close</button>
-              </div>
-            )}
-          </div>
+      {/* Conditional Message Field: Only shows when 'Other' is selected */}
+      {selectedService === "Other" && (
+        <div className="input-group full-width reveal-animation">
+          <label>Please Specify</label>
+          <textarea 
+            name="pMessage" 
+            placeholder="Tell us more about the service you need..."
+            required
+          ></textarea>
+        </div>
+      )}
+    </div>
+    
+    <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '20px' }}>
+      Confirm Appointment
+    </button>
+  </form>
+</div>
         </div>
       )}
 
-      {/* --- HERO SECTION --- */}
+      {/* HERO SECTION */}
       <section className="hero" id="home">
         <div className="slider-container">
           {heroImages.map((src, index) => (
             <div 
-              key={index}
+              key={src}
               className={`slide ${index === currentSlide ? 'active' : ''}`} 
               style={{ backgroundImage: `url('${src}')` }}
             ></div>
@@ -256,7 +252,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- MARQUEE --- */}
+      {/* MARQUEE */}
       <div className="marquee-section">
         <div className="marquee-track">
           {[1, 2, 3].map((i) => (
@@ -265,7 +261,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* --- JOURNEY SECTION --- */}
+      {/* JOURNEY SECTION */}
       <section className="journey" id="journey" ref={journeySectionRef}>
         <div className="container">
           <div className="section-card-wrapper">
@@ -287,9 +283,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- SIGNATURE THERAPIES (Horizontal Scroll) --- */}
+      {/* SIGNATURE THERAPIES */}
       <section className="services" id="signature">
-        <div className="section-card-wrapper" id="signatureWrapper" ref={sigWrapperRef}>
+        <div className="section-card-wrapper" ref={sigWrapperRef}>
           <div className="container">
             <div className="section-header">
               <span className="section-subtitle">Why Choose Us</span>
@@ -297,29 +293,29 @@ export default function Home() {
               <p>Comprehensive care for your body, hair, and skin.</p>
             </div>
           </div>
-          <div className="signature-track" id="signatureTrack" ref={sigTrackRef}>
+          <div className="signature-track" ref={sigTrackRef}>
             <div className="info-card">
               <div className="card-icon"><i className="fas fa-cog"></i></div>
               <h3>Skin Care Solutions</h3>
-              <p>Our slimming treatments are designed to help you achieve your weight loss goals effectively and safely, enhancing your overall well-being.</p>
+              <p>Our slimming treatments are designed to help you achieve your weight loss goals effectively and safely.</p>
             </div>
             <div className="info-card">
               <div className="card-icon"><i className="fas fa-globe"></i></div>
               <h3>Hair Care Services</h3>
-              <p>Experience the rejuvenating effects of our skin care solutions, tailored to address various skin concerns and promote healthy, glowing skin.</p>
+              <p>Experience rejuvenating effects with our skin care solutions, tailored to address various skin concerns.</p>
             </div>
             <div className="info-card">
               <div className="card-icon"><i className="fas fa-database"></i></div>
               <h3>Innovative Approach</h3>
-              <p>Transform your hair with our specialized hair care services, ranging from hair restoration to scalp treatments, ensuring beautiful and healthy hair.</p>
+              <p>Transform your hair with our specialized hair care services, ranging from restoration to scalp treatments.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- CLINICAL SERVICES (Horizontal Scroll) --- */}
+      {/* CLINICAL SERVICES */}
       <section className="clinical-services" id="clinical">
-        <div className="clinical-wrapper-card" id="clinicalWrapper" ref={clinWrapperRef}>
+        <div className="clinical-wrapper-card" ref={clinWrapperRef}>
           <div className="container">
             <div className="section-header">
               <span className="section-subtitle">Our Expertise</span>
@@ -327,53 +323,37 @@ export default function Home() {
               <p>Explore our full range of treatments</p>
             </div>
           </div>
-          <div className="clinical-track" id="clinicalTrack" ref={clinTrackRef}>
-            {/* Card 1 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/prp.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>PRP Skin</h3><p>Natural skin rejuvenation using plasma.</p><span className="clinical-link">Learn More</span></div>
-            </div>
-            {/* Card 2 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/needling.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>Micro Needling</h3><p>Boost collagen and smooth texture.</p><span className="clinical-link">Learn More</span></div>
-            </div>
-            {/* Card 3 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/whitening.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>Skin Whitening</h3><p>Restore radiance and even tone.</p><span className="clinical-link">Learn More</span></div>
-            </div>
-            {/* Card 4 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/laser.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>Laser Hair Removal</h3><p>Pain-free, long-lasting smoothness.</p><span className="clinical-link">Learn More</span></div>
-            </div>
-            {/* Card 5 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/acne.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>Acne Treatment</h3><p>Clear skin and reduce scarring.</p><span className="clinical-link">Learn More</span></div>
-            </div>
-            {/* Card 6 */}
-            <div className="clinical-card">
-              <div className="clinical-img" style={{ backgroundImage: "url('/assets/body.png')", backgroundColor: '#eee' }}></div>
-              <div className="clinical-info"><h3>Body Contouring</h3><p>Non-invasive fat reduction and shaping.</p><span className="clinical-link">Learn More</span></div>
-            </div>
+          <div className="clinical-track" ref={clinTrackRef}>
+            {[
+              { title: "PRP Skin", desc: "Natural skin rejuvenation using plasma.", img: "/assets/prp.png" },
+              { title: "Micro Needling", desc: "Boost collagen and smooth texture.", img: "/assets/needling.png" },
+              { title: "Skin Whitening", desc: "Restore radiance and even tone.", img: "/assets/whitening.png" },
+              { title: "Laser Hair Removal", desc: "Pain-free, long-lasting smoothness.", img: "/assets/laser.png" },
+              { title: "Acne Treatment", desc: "Clear skin and reduce scarring.", img: "/assets/acne.png" },
+              { title: "Body Contouring", desc: "Non-invasive fat reduction and shaping.", img: "/assets/body.png" }
+            ].map((service, idx) => (
+              <div className="clinical-card" key={idx}>
+                <div className="clinical-img" style={{ backgroundImage: `url('${service.img}')`, backgroundColor: '#eee' }}></div>
+                <div className="clinical-info">
+                  <h3>{service.title}</h3>
+                  <p>{service.desc}</p>
+                  <span className="clinical-link">Learn More</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div> 
       </section>
 
-      {/* --- REVIEWS (With Moving Photo Parallax) --- */}
+      {/* REVIEWS */}
       <section className="reviews" id="reviews" ref={reviewSectionRef} style={{ position: 'relative', overflow: 'hidden' }}>
-        
-        {/* 1. MOVING PHOTO CONTAINER */}
-        <div className="review-parallax-wrapper" ref={reviewBgRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '140%', zIndex: 0, transform: 'translateY(-20%)', pointerEvents: 'none' }}>
+        <div className="review-parallax-wrapper" ref={reviewBgRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '140%', zIndex: 0, transform: 'translate3d(0, -20%, 0)', pointerEvents: 'none' }}>
             <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80" 
                  className="review-bg-img" 
-                 alt="Background"
+                 alt=""
                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.15 }} /> 
         </div>
 
-        {/* 2. CONTENT CONTAINER */}
         <div className="container" style={{ position: 'relative', zIndex: 1 }}>
           <div className="section-header">
             <span className="section-subtitle">Client Stories</span>
@@ -382,54 +362,28 @@ export default function Home() {
           </div>
           
           <div className="reviews-grid">
-            <div className="review-card-outline" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(5px)' }}>
-              <div className="review-stars">
-                {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
-              </div>
-              <p className="review-text">“I never thought I'd see my skin this glowing again. The HydraFacial treatment was a game-changer for my wedding prep. Truly the best.”</p>
-              <div className="review-author">
-                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" alt="Sarah J." className="author-avatar" />
-                <div className="author-info">
-                  <h4>Sarah Jenkins</h4>
-                  <span>Bridal Package</span>
+            {[
+              { name: "Sarah Jenkins", service: "Bridal Package", text: "I never thought I'd see my skin this glowing again. The HydraFacial was a game-changer.", img: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=100&q=80" },
+              { name: "Michael Ross", service: "Laser Treatment", text: "Professional staff and unbelievable results after just 3 sessions. Highly recommend!", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" },
+              { name: "Emily Dao", service: "Hair PRP", text: "Finally found a clinic that listens. My hair restoration plan actually works. Confidence back!", img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" }
+            ].map((review, i) => (
+              <div key={i} className="review-card-outline" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(5px)' }}>
+                <div className="review-stars">
+                  {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
+                </div>
+                <p className="review-text">“{review.text}”</p>
+                <div className="review-author">
+                  <img src={review.img} alt={review.name} className="author-avatar" loading="lazy" />
+                  <div className="author-info">
+                    <h4>{review.name}</h4>
+                    <span>{review.service}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="review-card-outline" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(5px)' }}>
-              <div className="review-stars">
-                {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
-              </div>
-              <p className="review-text">“The staff is incredibly professional. I went in for laser hair removal and the results after just 3 sessions are unbelievable. Highly recommend!”</p>
-              <div className="review-author">
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Michael R." className="author-avatar" />
-                <div className="author-info">
-                  <h4>Michael Ross</h4>
-                  <span>Laser Treatment</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="review-card-outline" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(5px)' }}>
-              <div className="review-stars">
-                {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
-              </div>
-              <p className="review-text">“Finally found a clinic that listens. The hair restoration plan they designed for me actually works. My confidence is back.”</p>
-              <div className="review-author">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=100&q=80" alt="Emily D." className="author-avatar" />
-                <div className="author-info">
-                  <h4>Emily Dao</h4>
-                  <span>Hair PRP</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
-
-      {/* Button to open modal globally via header uses standard onClick logic,
-          but here we pass the open function to header if needed, or simply 
-          render the modal logic here at the page level which is safer for Next.js */}
       
       <Footer />
     </>

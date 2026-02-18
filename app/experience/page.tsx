@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Lenis from 'lenis';
@@ -38,28 +38,32 @@ export default function Experience() {
 
   // --- EFFECT: SCROLL LOGIC ---
   useEffect(() => {
-    // 1. Init Lenis
+    // 1. Init Lenis with hardware acceleration and mobile optimization
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 2, // Better responsiveness on mobile
+      lerp: 0.1,
     });
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
-    // 2. Init ScrollReveal
-    import('scrollreveal').then((module) => {
-      const ScrollReveal = module.default;
-      const sr = ScrollReveal({
+    // 2. Init ScrollReveal with dynamic mobile/desktop distances
+    const initSR = async () => {
+      const module = await import('scrollreveal');
+      const sr = module.default({
         origin: 'bottom',
-        distance: '60px',
+        distance: window.innerWidth < 768 ? '30px' : '60px',
         duration: 1000,
         delay: 200,
         easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        reset: false
+        reset: false,
+        viewFactor: 0.2, // Triggers earlier for smoother perceived flow
       });
 
       sr.reveal('.page-header h1, .page-header p');
@@ -69,11 +73,14 @@ export default function Experience() {
       sr.reveal('.icon-card', { interval: 100 });
       sr.reveal('.review-card', { interval: 100 });
       sr.reveal('.review-form-box');
-      sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '30px' });
-    });
+      sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '20px' });
+    };
+
+    initSR();
 
     return () => {
       lenis.destroy();
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
@@ -86,17 +93,15 @@ export default function Experience() {
     const message = formData.get('rMessage') as string;
 
     const newReview: Review = {
-      id: Date.now(), // simple unique id
+      id: Date.now(), 
       name,
       service,
       rating,
       message
     };
 
-    // Add new review to the top of the list
     setReviews([newReview, ...reviews]);
     
-    // Reset form
     e.currentTarget.reset();
     setRating(5);
     alert("Thank you! Your review has been submitted.");
@@ -106,40 +111,40 @@ export default function Experience() {
     <>
       <Header />
 
-      <main>
+      <main style={{ overflowX: 'hidden' }}>
         {/* --- PAGE HEADER --- */}
-        <section className="page-header">
+        <section className="page-header" style={{ willChange: 'transform, opacity' }}>
           <div className="container">
             <h1>Client Transformations at <br/><span style={{ color: 'var(--primary-orange)' }}>Shape Wellness</span></h1>
             <p>Real stories, real results. Discover how we've helped our clients achieve their beauty and wellness goals through personalized care.</p>
           </div>
         </section>
 
-        {/* --- TRANSFORM SECTION (Circles) --- */}
+        {/* --- TRANSFORM SECTION --- */}
         <section className="transform-section">
           <div className="container">
             <div className="transform-grid">
-              <div className="transform-card">
+              <div className="transform-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="circle-image">
-                  <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80" alt="Body Sculpting" />
+                  <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=600&q=80" alt="Body Sculpting" loading="lazy" />
                 </div>
                 <p>Discover the inspiring success stories of individuals who have transformed their lives through our slimming and body care treatments.</p>
                 <h3>Body Sculpting</h3>
                 <span>Personalized Treatments</span>
               </div>
 
-              <div className="transform-card">
+              <div className="transform-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="circle-image">
-                  <img src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=600&q=80" alt="Skin Care" />
+                  <img src="https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=600&q=80" alt="Skin Care" loading="lazy" />
                 </div>
                 <p>Read about the incredible skin care transformations and the renewed confidence our clients have gained at Shape Wellness.</p>
                 <h3>Skin Care</h3>
                 <span>Professional Team</span>
               </div>
 
-              <div className="transform-card">
+              <div className="transform-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="circle-image">
-                  <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=600&q=80" alt="Hair Care" />
+                  <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&w=600&q=80" alt="Hair Care" loading="lazy" />
                 </div>
                 <p>Explore how our unique approach to hair restoration has helped both men and women achieve their desired results.</p>
                 <h3>Hair Care</h3>
@@ -149,34 +154,34 @@ export default function Experience() {
           </div>
         </section>
 
-        {/* --- BEFORE & AFTER (Icons) --- */}
-        <section className="before-after-section">
+        {/* --- BEFORE & AFTER --- */}
+        <section className="before-after-section" style={{ perspective: '1000px' }}>
           <div className="container">
             <h2 className="section-center-title">Before and After <br/>Transformations</h2>
             
             <div className="icon-grid">
-              <div className="icon-card">
+              <div className="icon-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="icon-wrapper"><i className="fas fa-paperclip"></i></div>
                 <h3>Stunning Results</h3>
                 <p>See the amazing makeovers and stunning results achieved by individuals who trusted Shape Wellness.</p>
                 <a href="#" className="btn-outline-small">Discover More</a>
               </div>
 
-              <div className="icon-card">
+              <div className="icon-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="icon-wrapper"><i className="fas fa-magic"></i></div>
                 <h3>Incredible Changes</h3>
                 <p>Experience the incredible changes in body shape, skin texture, and hair quality through our treatments.</p>
                 <a href="#" className="btn-outline-small">See Results</a>
               </div>
 
-              <div className="icon-card">
+              <div className="icon-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="icon-wrapper"><i className="fas fa-arrow-down"></i></div>
                 <h3>Dramatic Improvements</h3>
                 <p>Discover the dramatic improvements in confidence and self-esteem that our clients have experienced.</p>
                 <a href="/contact" className="btn-outline-small">Book Now</a>
               </div>
 
-              <div className="icon-card">
+              <div className="icon-card" style={{ transform: 'translateZ(0)' }}>
                 <div className="icon-wrapper"><i className="far fa-eye"></i></div>
                 <h3>Visible Differences</h3>
                 <p>Explore the visible differences in our clients' appearances and overall well-being.</p>
@@ -192,7 +197,7 @@ export default function Experience() {
             <h2 className="section-center-title" style={{ fontSize: '2.5rem', marginBottom: '20px' }}>Client Reviews</h2>
             <div className="reviews-container" id="reviewsContainer">
               {reviews.map((review) => (
-                <div className="review-card" key={review.id}>
+                <div className="review-card" key={review.id} style={{ transform: 'translateZ(0)' }}>
                   <div className="stars">
                     {[...Array(5)].map((_, i) => (
                       <i key={i} className="fas fa-star" style={{ color: i < review.rating ? '#FFB400' : '#ddd' }}></i>
@@ -200,7 +205,6 @@ export default function Experience() {
                   </div>
                   <p className="review-text">"{review.message}"</p>
                   <div className="reviewer-meta">
-                    {/* Placeholder Avatar Logic using Initials */}
                     <div 
                         className="reviewer-img" 
                         style={{ 
@@ -210,7 +214,8 @@ export default function Experience() {
                             justifyContent: 'center', 
                             color: 'white', 
                             fontWeight: 'bold',
-                            fontSize: '1.2rem'
+                            fontSize: '1.2rem',
+                            flexShrink: 0
                         }}
                     >
                         {review.name.charAt(0)}
@@ -229,41 +234,41 @@ export default function Experience() {
         {/* --- ADD REVIEW FORM --- */}
         <section className="add-review-section">
           <div className="container">
-            <div className="review-form-box">
+            <div className="review-form-box" style={{ contain: 'content' }}>
               <div className="form-title">
                 <h2 className="section-title">Share Your Story</h2>
                 <p style={{ color: '#888' }}>We value your feedback. Let us know about your experience.</p>
               </div>
               
               <form onSubmit={handleSubmitReview}>
-                <div className="rating-select">
+                <div className="rating-select" style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <i 
                         key={star}
                         className={`fas fa-star rating-star ${star <= rating ? 'active' : ''}`} 
                         onClick={() => setRating(star)}
-                        style={{ color: star <= rating ? '#FFB400' : '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: '0.2s' }}
+                        style={{ color: star <= rating ? '#FFB400' : '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'transform 0.2s' }}
                     ></i>
                   ))}
                 </div>
 
-                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                   <div className="form-group">
                     <label>Name</label>
-                    <input type="text" name="rName" className="form-control" required placeholder="Your Name" />
+                    <input type="text" name="rName" className="form-control" required placeholder="Your Name" style={{ width: '100%' }} />
                   </div>
                   <div className="form-group">
                     <label>Service Taken</label>
-                    <input type="text" name="rService" className="form-control" placeholder="e.g. Skin Care" />
+                    <input type="text" name="rService" className="form-control" placeholder="e.g. Skin Care" style={{ width: '100%' }} />
                   </div>
                 </div>
                 
-                <div className="form-group">
+                <div className="form-group" style={{ marginTop: '20px' }}>
                   <label>Your Review</label>
-                  <textarea name="rMessage" className="form-control" required placeholder="Tell us about your experience..." style={{ resize: 'none', height: '120px' }}></textarea>
+                  <textarea name="rMessage" className="form-control" required placeholder="Tell us about your experience..." style={{ resize: 'none', height: '120px', width: '100%' }}></textarea>
                 </div>
 
-                <button type="submit" className="btn-submit">Submit Review</button>
+                <button type="submit" className="btn-submit" style={{ cursor: 'pointer', willChange: 'transform' }}>Submit Review</button>
               </form>
             </div>
           </div>

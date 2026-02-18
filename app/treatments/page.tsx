@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import Lenis from 'lenis';
@@ -13,24 +13,26 @@ export default function Treatments() {
 
   // --- EFFECT: SCROLL LOGIC ---
   useEffect(() => {
-    // 1. Init Lenis
+    // 1. Init Lenis for smooth stacking transitions
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 1.5,
     });
 
+    let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
     // 2. Init ScrollReveal
-    import('scrollreveal').then((module) => {
-      const ScrollReveal = module.default;
-      const sr = ScrollReveal({
+    const initSR = async () => {
+      const module = await import('scrollreveal');
+      const sr = module.default({
         origin: 'bottom',
-        distance: '60px',
+        distance: '40px',
         duration: 1000,
         delay: 200,
         easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
@@ -39,23 +41,26 @@ export default function Treatments() {
 
       sr.reveal('.hero-title, .hero-subtitle, .hero-desc');
       
-      // Target content inside sticky cards so sticky logic doesn't break
-      sr.reveal('.treatment-card .card-img-container, .treatment-card .card-content', { 
+      // Reveal internal content only to avoid breaking the 'sticky' container logic
+      sr.reveal('.card-img-container, .card-content', { 
         interval: 100,
         origin: 'bottom',
-        distance: '30px'
+        distance: '20px'
       });
 
       sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '30px' });
-    });
+    };
+
+    initSR();
 
     return () => {
       lenis.destroy();
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
   // --- HANDLERS ---
-  const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBooking = useCallback((e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     
@@ -65,12 +70,12 @@ export default function Treatments() {
       time: formData.get('pTime') as string,
       service: formData.get('pService') as string,
     });
-  };
+  }, []);
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setBookingSuccess(null);
-  };
+  }, []);
 
   return (
     <>
@@ -81,50 +86,37 @@ export default function Treatments() {
         <div className="modal-overlay" style={{ display: 'flex' }}>
           <div className="modal-box">
             <span className="close-btn" onClick={closeModal}>×</span>
-            
-            {!bookingSuccess && (
-              <>
-                <div className="modal-image"></div>
-                <div className="modal-form" id="modalFormSection">
-                  <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
-                  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
-                  <form onSubmit={handleBooking}>
-                    <div className="form-grid">
-                      <div className="input-group"><label>Name</label><input type="text" name="pName" required /></div>
-                      <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" required /></div>
-                      <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
-                      <div className="input-group"><label>Time</label><input type="time" name="pTime" required /></div>
-                      <div className="input-group full-width">
-                        <label>Service</label>
-                        <select name="pService">
-                          <option>Slimming</option>
-                          <option>Skin Care</option>
-                          <option>Hair Restoration</option>
-                          <option>Laser Tech</option>
-                          <option>Dental Aesthetics</option>
-                          <option>Bridal Studio</option>
-                        </select>
-                      </div>
-                      <div className="input-group full-width"><label>Message</label><textarea name="pMessage" placeholder="Any specific concerns?"></textarea></div>
+            {!bookingSuccess ? (
+              <div className="modal-form">
+                <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
+                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
+                <form onSubmit={handleBooking}>
+                  <div className="form-grid">
+                    <div className="input-group"><label>Name</label><input type="text" name="pName" required /></div>
+                    <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" required /></div>
+                    <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
+                    <div className="input-group"><label>Time</label><input type="time" name="pTime" required /></div>
+                    <div className="input-group full-width">
+                      <label>Service</label>
+                      <select name="pService">
+                        <option>Slimming</option>
+                        <option>Skin Care</option>
+                        <option>Hair Restoration</option>
+                        <option>Laser Tech</option>
+                        <option>Dental Aesthetics</option>
+                        <option>Bridal Studio</option>
+                      </select>
                     </div>
-                    <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '10px' }}>Confirm Booking</button>
-                  </form>
-                </div>
-              </>
-            )}
-
-            {bookingSuccess && (
-              <div className="success-message" style={{ display: 'block', width: '100%' }}>
+                    <div className="input-group full-width"><label>Message</label><textarea name="pMessage" placeholder="Any specific concerns?"></textarea></div>
+                  </div>
+                  <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '10px' }}>Confirm Booking</button>
+                </form>
+              </div>
+            ) : (
+              <div className="success-message" style={{ display: 'block', width: '100%', textAlign: 'center' }}>
                 <i className="fas fa-check-circle" style={{ fontSize: '50px', color: 'var(--primary-orange)', marginBottom: '20px' }}></i>
-                <h2 style={{ fontFamily: "'Playfair Display', serif" }}>Appointment Confirmed!</h2>
-                <p style={{ color: '#666' }}>Thank you. Your consultation is booked.</p>
-                <div className="appoint-details">
-                  <p><strong>ID:</strong> <span style={{ color: 'var(--primary-orange)' }}>{bookingSuccess.id}</span></p>
-                  <p><strong>Date:</strong> <span>{bookingSuccess.date}</span></p>
-                  <p><strong>Time:</strong> <span>{bookingSuccess.time}</span></p>
-                  <p><strong>Service:</strong> <span>{bookingSuccess.service}</span></p>
-                </div>
-                <button className="btn-appoint" onClick={closeModal} style={{ marginTop: '20px' }}>Close</button>
+                <h2>Confirmed!</h2>
+                <button className="btn-appoint" onClick={closeModal}>Close</button>
               </div>
             )}
           </div>
@@ -137,7 +129,7 @@ export default function Treatments() {
           <div className="container">
             <span className="hero-subtitle">Our Expertise</span>
             <h1 className="hero-title">Advanced Treatments & <br/> Technologies</h1>
-            <p className="hero-desc">Discover our comprehensive range of aesthetic solutions, powered by cutting-edge technology and performed by certified experts.</p>
+            <p className="hero-desc">Discover our comprehensive range of aesthetic solutions, powered by cutting-edge technology.</p>
           </div>
         </section>
 
@@ -146,109 +138,39 @@ export default function Treatments() {
           <div className="container">
             <div className="treatment-grid">
               
-              {/* Card 1 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/prp.png')" }}></div>
+              {[
+                { title: "PRP Skin Therapy", cat: "Skin Rejuvenation", img: "/assets/prp.png", text: "Platelet-Rich Plasma (PRP) therapy utilizes your body's own growth factors to stimulate collagen production." },
+                { title: "Micro Needling", cat: "Skin Restoration", img: "/assets/needling.png", text: "A minimally invasive procedure that treats acne scars and wrinkles using fine sterile needles." },
+                { title: "Skin Whitening", cat: "Complexion", img: "/assets/whitening.png", text: "Advanced pigmentation correction treatments designed to even out skin tone and restore radiance." },
+                { title: "Laser Hair Removal", cat: "Laser Technology", img: "/assets/laser.png", text: "Experience pain-free, long-lasting hair reduction using state-of-the-art diode laser technology." },
+                { title: "Acne Treatment", cat: "Dermatology", img: "/assets/acne.png", text: "Customized chemical peels and medical facials to target active acne and reduce inflammation." },
+                { title: "Body Contouring", cat: "Body Sculpting", img: "/assets/body.png", text: "Non-invasive fat reduction technologies to shape, tone, and firm stubborn areas." },
+                { title: "Dental Aesthetics", cat: "Smile Care", img: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80", text: "Comprehensive dental solutions including teeth whitening and veneers to perfect your smile." },
+                { title: "Bridal Packages", cat: "Special Occasion", img: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80", text: "Curated pre-bridal packages to make you shine on your big day." }
+              ].map((item, index) => (
+                <div 
+                  className="treatment-card" 
+                  key={index}
+                  style={{ 
+                    position: 'sticky', 
+                    top: `${100 + (index * 20)}px`, // Restores the stacking overlap logic
+                    transform: 'translateZ(0)', // GPU acceleration for smooth sticky scroll
+                    marginBottom: '50px' 
+                  }}
+                >
+                  <div className="card-img-container">
+                    <div className="card-img" style={{ backgroundImage: `url('${item.img}')` }}></div>
+                  </div>
+                  <div className="card-content">
+                    <span className="card-category">{item.cat}</span>
+                    <h3 className="card-title">{item.title}</h3>
+                    <p className="card-text">{item.text}</p>
+                    <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>
+                      Book Consultation <i className="fas fa-arrow-right"></i>
+                    </button>
+                  </div>
                 </div>
-                <div className="card-content">
-                  <span className="card-category">Skin Rejuvenation</span>
-                  <h3 className="card-title">PRP Skin Therapy</h3>
-                  <p className="card-text">Platelet-Rich Plasma (PRP) therapy utilizes your body's own growth factors to stimulate collagen production, reduce fine lines, and improve skin texture for a natural glow.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 2 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/needling.png')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Skin Restoration</span>
-                  <h3 className="card-title">Micro Needling</h3>
-                  <p className="card-text">A minimally invasive procedure that treats acne scars, enlarged pores, and wrinkles by triggering the skin's natural repair process using fine sterile needles.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 3 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/whitening.png')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Complexion</span>
-                  <h3 className="card-title">Skin Whitening</h3>
-                  <p className="card-text">Advanced pigmentation correction treatments designed to even out skin tone, reduce sun spots, and restore radiance to dull or pigmented skin.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 4 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/laser.png')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Laser Technology</span>
-                  <h3 className="card-title">Laser Hair Removal</h3>
-                  <p className="card-text">Experience pain-free, long-lasting hair reduction using state-of-the-art diode laser technology suitable for all skin types.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 5 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/acne.png')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Dermatology</span>
-                  <h3 className="card-title">Acne Treatment</h3>
-                  <p className="card-text">Customized chemical peels and medical facials to target active acne, reduce inflammation, and minimize post-acne scarring.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 6 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('/assets/body.png')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Body Sculpting</span>
-                  <h3 className="card-title">Body Contouring</h3>
-                  <p className="card-text">Non-invasive fat reduction technologies like CoolSculpting and RF therapy to shape, tone, and firm stubborn areas without surgery.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 7 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Smile Care</span>
-                  <h3 className="card-title">Dental Aesthetics</h3>
-                  <p className="card-text">Comprehensive dental solutions including teeth whitening, veneers, and smile designing to perfect your smile.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
-
-              {/* Card 8 */}
-              <div className="treatment-card">
-                <div className="card-img-container">
-                  <div className="card-img" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80')" }}></div>
-                </div>
-                <div className="card-content">
-                  <span className="card-category">Special Occasion</span>
-                  <h3 className="card-title">Bridal Packages</h3>
-                  <p className="card-text">Curated pre-bridal packages including full body polishing, glow facials, and hair spa to make you shine on your big day.</p>
-                  <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>Book Consultation <i className="fas fa-arrow-right"></i></button>
-                </div>
-              </div>
+              ))}
 
             </div>
           </div>

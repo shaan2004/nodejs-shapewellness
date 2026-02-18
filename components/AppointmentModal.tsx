@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,54 +8,59 @@ interface ModalProps {
 
 export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
   const [formData, setFormData] = useState({
     id: "SW-" + Math.floor(1000 + Math.random() * 9000),
     date: "",
-    time: "10:00 AM",
+    time: "10:30 AM",
     service: ""
   });
 
-  if (!isOpen) return null;
+  const handleClose = useCallback(() => {
+    setIsSubmitted(false);
+    setSelectedService("");
+    onClose();
+  }, [onClose]);
 
-  const handleConfirm = (e: React.FormEvent) => {
+  const handleConfirm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const target = e.target as any;
+    const data = new FormData(e.currentTarget);
     
-    setFormData({
-      ...formData,
-      date: target.cDate.value,
-      service: target.cServiceText?.value || "General Consultation"
-    });
+    setFormData(prev => ({
+      ...prev,
+      date: data.get('cDate') as string,
+      service: data.get('cService') === "Other" 
+               ? (data.get('cOtherText') as string) 
+               : (data.get('cService') as string)
+    }));
     
     setIsSubmitted(true);
   };
 
-  const handleClose = () => {
-    setIsSubmitted(false);
-    onClose();
-  };
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-box" onClick={(e) => e.stopPropagation()}>
         
-        {!isSubmitted ? (
-          <>
-            <header className="modal-header">
-              <div className="title-group">
-                <h2 className="txt-orange">MAKE AN</h2>
-                <h2 className="txt-orange">APPOINTMENT</h2>
-              </div>
-              <div className="header-right">
-                <img src="/assets/Shape Wellness Logo Final.png" alt="Logo" className="logo-img" />
-                <button className="close-x" onClick={handleClose}>&times;</button>
-              </div>
-            </header>
+        {/* HEADER */}
+        <header className="modal-header">
+          <div className="title-group">
+            <h2 className="txt-orange">MAKE AN</h2>
+            <h2 className="txt-orange">APPOINTMENT</h2>
+          </div>
+          <div className="header-right">
+            <img src="/assets/Shape Wellness Logo Final.png" alt="Logo" className="logo-img" />
+            <button className="close-x" onClick={handleClose}>&times;</button>
+          </div>
+        </header>
 
-            <div className="modal-body">
+        {/* BODY */}
+        <div className="modal-body">
+          {!isSubmitted ? (
+            <>
               <div className="image-side">
-                <div className="brand-accent-bg" />
-                <img src="/assets/2025-09-21.webp" alt="Wellness" className="side-img" />
+                <img src="/assets/2025-09-21.webp" alt="Reception" className="side-img" />
               </div>
 
               <form className="appointment-form" onSubmit={handleConfirm}>
@@ -69,6 +74,7 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
                     <input type="tel" name="cPhone" placeholder="Enter Phone No" required />
                   </div>
                 </div>
+                
                 <div className="form-row">
                   <div className="field">
                     <label>DATE</label>
@@ -76,116 +82,137 @@ export default function AppointmentModal({ isOpen, onClose }: ModalProps) {
                   </div>
                   <div className="field">
                     <label>SERVICE</label>
-                    <input type="text" name="cServiceText" placeholder="Enter Service" />
+                    <select 
+                      name="cService" 
+                      required 
+                      value={selectedService} 
+                      onChange={(e) => setSelectedService(e.target.value)}
+                    >
+                      <option value="" disabled>Select Service</option>
+                      <option value="Slimming">Slimming</option>
+                      <option value="Skin Care">Skin Care</option>
+                      <option value="Hair Restoration">Hair Restoration</option>
+                      <option value="Laser Tech">Laser Tech</option>
+                      <option value="Dental Aesthetics">Dental Aesthetics</option>
+                      <option value="Bridal Studio">Bridal Studio</option>
+                      <option value="Other">Other</option>
+                    </select>
                   </div>
                 </div>
+
+                {selectedService === "Other" && (
+                  <div className="field reveal-animation">
+                    <label>PLEASE SPECIFY SERVICE</label>
+                    <input type="text" name="cOtherText" placeholder="e.g. Specialized Facial" required />
+                  </div>
+                )}
+
                 <div className="field">
-                  <label>MESSAGE</label>
-                  <textarea placeholder="Tell us more..." rows={3}></textarea>
+                  <label>MESSAGE (OPTIONAL)</label>
+                  <textarea name="cMessage" placeholder="Tell us more about your concerns..." rows={3}></textarea>
                 </div>
+                
                 <div className="form-footer">
                   <button type="submit" className="confirm-btn">Confirm Appointment</button>
                 </div>
               </form>
+            </>
+          ) : (
+            <div className="success-container">
+              <i className="fas fa-check-circle success-icon"></i>
+              <h2 className="success-title">Confirmed!</h2>
+              <div className="appoint-details">
+                <p><strong>Booking ID:</strong> <span className="brand-orange">{formData.id}</span></p>
+                <p><strong>Date:</strong> <span>{formData.date}</span></p>
+                <p><strong>Service:</strong> <span>{formData.service}</span></p>
+              </div>
+              <button className="confirm-btn" onClick={handleClose} style={{marginTop: '20px', width: 'auto'}}>Close</button>
             </div>
-          </>
-        ) : (
-          <div className="success-message">
-            <i className="fas fa-check-circle success-icon"></i>
-            <h2 className="success-title">Appointment Confirmed!</h2>
-            <p className="success-text">Thank you. Your consultation is booked.</p>
-            
-            <div className="appoint-details">
-              <p><strong>ID:</strong> <span className="brand-orange">{formData.id}</span></p>
-              <p><strong>Date:</strong> <span>{formData.date}</span></p>
-              <p><strong>Time:</strong> <span>{formData.time}</span></p>
-              <p><strong>Service:</strong> <span>{formData.service}</span></p>
-            </div>
-            
-            <button className="confirm-btn" onClick={handleClose} style={{marginTop: '20px', width: 'auto', padding: '12px 40px'}}>
-              Close
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <style jsx>{`
         .modal-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background: rgba(0, 0, 0, 0.85); /* Slightly darker for better contrast */
-          backdrop-filter: blur(5px);
-          display: flex; 
-          justify-content: center;
-          align-items: center; /* Fix for vertical centering */
-          z-index: 1000000; /* Increased to ensure it is above all site headers */
-          padding: 20px;
+          top: 0;width: 100vw; height: 100vh;
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(8px);
+          display: flex; justify-content: center; align-items: center;
+          z-index: 10000; padding: 20px;
         }
 
         .modal-box {
           background: #fff;
           width: 100%;
           max-width: 950px;
+          /* Removed fixed height to prevent cutting off fields */
           border-radius: 12px;
-          position: relative; /* Changed from overflow:hidden to allow clean borders */
-          box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-          animation: popUp 0.3s ease;
+          overflow: hidden;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
           display: flex;
           flex-direction: column;
-        }
-
-        @keyframes popUp {
-          from { opacity: 0; transform: scale(0.95) translateY(20px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .modal-header { 
           display: flex; 
           justify-content: space-between; 
-          align-items: flex-end; 
-          padding: 30px 50px 20px; 
-          /* Removed border-bottom black line */
-          border-bottom: none; 
+          align-items: center; 
+          padding: 40px 60px; 
+          background: #1a1a1a;
         }
 
-        .txt-black { font-family: serif; font-size: 24px; color: #1a1a1a; margin: 0; letter-spacing: 1.5px; }
-        .txt-orange { font-family: serif; font-size: 28px; color: #e65100; margin: 0; font-weight: 600; letter-spacing: 1.5px; }
-        .logo-img { height: 40px; width: auto; }
-        .close-x { font-size: 40px; border: none; background: none; cursor: pointer; color: #bbb; line-height: 0.5; }
+        .txt-orange { font-family: serif; font-size: 22px; color: #e65100; margin: 0; font-weight: 700; line-height: 1.2; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .logo-img { height: 30px; filter: brightness(0) invert(1); }
+        .close-x { font-size: 30px; border: none; background: none; cursor: pointer; color: #fff; line-height: 1; }
 
-        .modal-body { display: grid; grid-template-columns: 1fr 1.3fr; gap: 50px; padding: 20px 50px 40px; }
+        .modal-body { 
+          display: grid; 
+          grid-template-columns: 1fr 1.2fr; 
+          padding: 30px 40px;
+          gap: 30px;
+          align-items: start;
+        }
         
-        .image-side { position: relative; }
-        .brand-accent-bg { position: absolute; top: -15px; left: -15px; width: 75%; height: 55%; background: #fff3e0; border-radius: 20px; }
-        .side-img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; border-radius: 20px; position: relative; z-index: 2; box-shadow: 10px 10px 25px rgba(0,0,0,0.1); }
+        .image-side { width: 100%; height: 100%; }
+        .side-img { width: 100%; height: auto; border-radius: 12px; object-fit: cover; }
 
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .field { margin-bottom: 20px; display: flex; flex-direction: column; }
-        label { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px; letter-spacing: 0.5px; }
-        input, textarea { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: #fff; }
+        .field { margin-bottom: 15px; display: flex; flex-direction: column; }
+        label { font-size: 11px; font-weight: 800; color: #444; margin-bottom: 5px; letter-spacing: 0.5px; }
+        
+        input, select, textarea { 
+          padding: 10px; 
+          border: 1px solid #ddd; 
+          border-radius: 6px; 
+          font-size: 14px;
+          width: 100%;
+        }
 
-        .form-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
-        .confirm-btn { background: #e65100; color: white; padding: 14px 30px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .confirm-btn:hover { background: #bf360c; transform: translateY(-1px); }
+        .confirm-btn { 
+          background: #e65100; 
+          color: white; 
+          width: 100%; 
+          padding: 12px; 
+          border: none; 
+          border-radius: 6px; 
+          font-weight: 700; 
+          cursor: pointer; 
+          text-transform: uppercase;
+          margin-top: 10px;
+        }
 
-        /* Success Message Styles */
-        .success-message { padding: 60px 40px; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .success-icon { font-size: 65px; color: #e65100; margin-bottom: 20px; }
-        .success-title { font-family: serif; font-size: 36px; margin-bottom: 12px; color: #1a1a1a; }
-        .success-text { color: #555; margin-bottom: 35px; }
-        .appoint-details { background: #fafafa; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid #eee; }
-        .appoint-details p { margin: 12px 0; font-size: 16px; display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
-        .brand-orange { color: #e65100; font-weight: bold; }
+        .success-container { grid-column: span 2; text-align: center; padding: 40px 0; }
+        .success-icon { font-size: 50px; color: #e65100; margin-bottom: 15px; }
+        .appoint-details { margin: 20px auto; max-width: 300px; text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; }
+        .appoint-details p { display: flex; justify-content: space-between; margin: 5px 0; font-size: 14px; }
 
         @media (max-width: 850px) {
+          .modal-box { max-height: 90vh; overflow-y: auto; }
           .modal-body { grid-template-columns: 1fr; padding: 20px; }
           .image-side { display: none; }
-          .modal-header { padding: 20px 30px; }
-          .txt-black { font-size: 18px; }
-          .txt-orange { font-size: 22px; }
+          .form-row { grid-template-columns: 1fr; gap: 0; }
         }
       `}</style>
     </div>

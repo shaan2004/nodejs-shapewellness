@@ -429,7 +429,8 @@ textarea { resize: none; height: 80px; }
     border: 2px solid transparent;
 }
 
-.info-card:hover { 
+.info-card:hover {
+    
     transform: translateY(-10px); 
     box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55);
     border-color: var(--primary-orange); 
@@ -437,6 +438,7 @@ textarea { resize: none; height: 80px; }
 }
 
 .card-icon { font-size: 3rem; margin-bottom: 20px; color: var(--text-dark); }
+
 .info-card h3 { font-size: 1.8rem; margin-bottom: 15px; color: var(--text-dark); }
 .info-card p { color: var(--text-light); font-size: 1rem; line-height: 1.6; }
 

@@ -2,17 +2,21 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import AppointmentModal from './AppointmentModal'; // Import the new modal
+import AppointmentModal from './AppointmentModal';
 
 export default function Header() {
   const [isNavActive, setIsNavActive] = useState<boolean>(false);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for popup
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
   const toggleMenu = () => setIsNavActive(!isNavActive);
   
-  // Open the popup instead of scrolling
-  const openModal = () => setIsModalOpen(true);
+  // Close menu and open modal
+  const handleAppointmentClick = () => {
+    setIsNavActive(false); // Close mobile menu when clicking the button
+    setIsModalOpen(true);
+  };
+
   const closeModal = () => setIsModalOpen(false);
 
   const isActive = (path: string) => pathname === path ? 'active' : '';
@@ -26,23 +30,24 @@ export default function Header() {
           </Link>
           
           <div className="mobile-toggle" onClick={toggleMenu}>
-            <i className="fas fa-bars"></i>
+            <i className={`fas ${isNavActive ? 'fa-times' : 'fa-bars'}`}></i>
           </div>
           
           <div className={`nav-links ${isNavActive ? 'active' : ''}`} id="navLinks">
-            <Link href="/" className={isActive('/')}>Home</Link>
-            <Link href="/experience" className={isActive('/experience')}>Experience</Link>
-            <Link href="/treatments" className={isActive('/treatments')}>Treatments</Link>
-            <Link href="/about" className={isActive('/about')}>About Us</Link>
-            <Link href="/contact" className={isActive('/contact')}>Contact</Link>
+            <Link href="/" className={isActive('/')} onClick={() => setIsNavActive(false)}>Home</Link>
+            <Link href="/experience" className={isActive('/experience')} onClick={() => setIsNavActive(false)}>Experience</Link>
+            <Link href="/treatments" className={isActive('/treatments')} onClick={() => setIsNavActive(false)}>Treatments</Link>
+            <Link href="/about" className={isActive('/about')} onClick={() => setIsNavActive(false)}>About Us</Link>
+            <Link href="/contact" className={isActive('/contact')} onClick={() => setIsNavActive(false)}>Contact</Link>
+            
+            {/* Button is now structurally placed below Contact */}
+            <button className="btn-appoint" onClick={handleAppointmentClick}>
+              Book Appointment
+            </button>
           </div>
-          
-          {/* Trigger Modal */}
-          <button className="btn-appoint" onClick={openModal}>Book Appointment</button>
         </nav>
       </div>
 
-      {/* Render the Modal Component */}
       <AppointmentModal isOpen={isModalOpen} onClose={closeModal} />
     </header>
   );

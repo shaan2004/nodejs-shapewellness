@@ -139,12 +139,12 @@ export default function Treatments() {
             <div className="treatment-grid">
               
               {[
-                { title: "PRP Skin Therapy", cat: "Skin Rejuvenation", img: "/assets/prp.png", text: "Platelet-Rich Plasma (PRP) therapy utilizes your body's own growth factors to stimulate collagen production." },
-                { title: "Micro Needling", cat: "Skin Restoration", img: "/assets/needling.png", text: "A minimally invasive procedure that treats acne scars and wrinkles using fine sterile needles." },
-                { title: "Skin Whitening", cat: "Complexion", img: "/assets/whitening.png", text: "Advanced pigmentation correction treatments designed to even out skin tone and restore radiance." },
-                { title: "Laser Hair Removal", cat: "Laser Technology", img: "/assets/laser.png", text: "Experience pain-free, long-lasting hair reduction using state-of-the-art diode laser technology." },
-                { title: "Acne Treatment", cat: "Dermatology", img: "/assets/acne.png", text: "Customized chemical peels and medical facials to target active acne and reduce inflammation." },
-                { title: "Body Contouring", cat: "Body Sculpting", img: "/assets/body.png", text: "Non-invasive fat reduction technologies to shape, tone, and firm stubborn areas." },
+                { title: "PRP Skin Therapy", cat: "Skin Rejuvenation", img: "/assets/prp.webp", text: "Platelet-Rich Plasma (PRP) therapy utilizes your body's own growth factors to stimulate collagen production." },
+                { title: "Micro Needling", cat: "Skin Restoration", img: "/assets/needling.webp", text: "A minimally invasive procedure that treats acne scars and wrinkles using fine sterile needles." },
+                { title: "Skin Whitening", cat: "Complexion", img: "/assets/whitening.webp", text: "Advanced pigmentation correction treatments designed to even out skin tone and restore radiance." },
+                { title: "Laser Hair Removal", cat: "Laser Technology", img: "/assets/laser.webp", text: "Experience pain-free, long-lasting hair reduction using state-of-the-art diode laser technology." },
+                { title: "Acne Treatment", cat: "Dermatology", img: "/assets/acne.webp", text: "Customized chemical peels and medical facials to target active acne and reduce inflammation." },
+                { title: "Body Contouring", cat: "Body Sculpting", img: "/assets/body.webp", text: "Non-invasive fat reduction technologies to shape, tone, and firm stubborn areas." },
                 { title: "Dental Aesthetics", cat: "Smile Care", img: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&w=800&q=80", text: "Comprehensive dental solutions including teeth whitening and veneers to perfect your smile." },
                 { title: "Bridal Packages", cat: "Special Occasion", img: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=800&q=80", text: "Curated pre-bridal packages to make you shine on your big day." }
               ].map((item, index) => (

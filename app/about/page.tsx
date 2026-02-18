@@ -207,7 +207,7 @@ export default function About() {
                 <button className="btn-outline" onClick={toggleModal}>Explore</button>
               </div>
               <div className="card-image-wrapper">
-                <div className="card-img" style={{ backgroundImage: "url('/assets/Gemini_Generated_Image_yvy2dfyvy2dfyvy2.png')", transform: 'translateZ(0)' }}></div>
+                <div className="card-img" style={{ backgroundImage: "url('/assets/Gemini_Generated_Image_yvy2dfyvy2dfyvy2.webp')", transform: 'translateZ(0)' }}></div>
               </div>
             </div>
           </div>

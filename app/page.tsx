@@ -325,12 +325,12 @@ export default function Home() {
           </div>
           <div className="clinical-track" ref={clinTrackRef}>
             {[
-              { title: "PRP Skin", desc: "Natural skin rejuvenation using plasma.", img: "/assets/prp.png" },
-              { title: "Micro Needling", desc: "Boost collagen and smooth texture.", img: "/assets/needling.png" },
-              { title: "Skin Whitening", desc: "Restore radiance and even tone.", img: "/assets/whitening.png" },
-              { title: "Laser Hair Removal", desc: "Pain-free, long-lasting smoothness.", img: "/assets/laser.png" },
-              { title: "Acne Treatment", desc: "Clear skin and reduce scarring.", img: "/assets/acne.png" },
-              { title: "Body Contouring", desc: "Non-invasive fat reduction and shaping.", img: "/assets/body.png" }
+              { title: "PRP Skin", desc: "Natural skin rejuvenation using plasma.", img: "/assets/prp.webp" },
+              { title: "Micro Needling", desc: "Boost collagen and smooth texture.", img: "/assets/needling.webp" },
+              { title: "Skin Whitening", desc: "Restore radiance and even tone.", img: "/assets/whitening.webp" },
+              { title: "Laser Hair Removal", desc: "Pain-free, long-lasting smoothness.", img: "/assets/laser.webp" },
+              { title: "Acne Treatment", desc: "Clear skin and reduce scarring.", img: "/assets/acne.webp" },
+              { title: "Body Contouring", desc: "Non-invasive fat reduction and shaping.", img: "/assets/body.webp" }
             ].map((service, idx) => (
               <div className="clinical-card" key={idx}>
                 <div className="clinical-img" style={{ backgroundImage: `url('${service.img}')`, backgroundColor: '#eee' }}></div>

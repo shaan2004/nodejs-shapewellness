@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import Lenis from 'lenis';
 import AppointmentModal from '../components/AppointmentModal';
 
+
 export default function Home() {
   // --- STATE MANAGEMENT ---
   const [isLoaded, setIsLoaded] = useState(false);

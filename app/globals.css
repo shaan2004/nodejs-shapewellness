@@ -656,6 +656,9 @@ textarea { resize: none; height: 80px; }
 
 .btn-card-link { 
     font-weight: 700; 
+    border: 2px solid var(--text-dark);
+    border-radius:50px;
+    padding: 20px 20px;
     color: var(--text-dark); 
     text-transform: uppercase; 
     letter-spacing: 1px; 
@@ -668,10 +671,12 @@ textarea { resize: none; height: 80px; }
 .btn-card-link i { 
     margin-left: 8px; 
     font-size: 0.8rem; 
+   
     transition: transform 0.3s; 
 }
 
 .treatment-card:hover .btn-card-link { 
+    border-color: var(--primary-orange);
     color: var(--primary-orange); 
 }
 
@@ -833,9 +838,39 @@ textarea { resize: none; height: 80px; }
 /* =========================================
    8. MOBILE RESPONSIVE OVERRIDES
    ========================================= */
+/* Default: Hide on Desktop/Tablet */
+.hero-mobile-btn {
+    display: none !important;
+}
+
+/* Show only on Mobile (under 900px) */
 
    
 @media (max-width: 900px) {
+     .hero-mobile-btn {
+        display: inline-block !important;
+        margin-top: 25px;
+        padding: 14px 32px;
+        font-size: 0.95rem;
+        background-color: var(--primary-orange);
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        /* Performance Fix: Use GPU to prevent stutter during slider transitions */
+        transform: translateZ(0);
+        box-shadow: 0 10px 20px rgba(230, 81, 0, 0.3);
+    }
+
+    /* Ensure content is centered for the button layout */
+    .hero-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 0 20px;}
     .container { padding: 0 20px; }
     section { padding: 60px 0; }
     

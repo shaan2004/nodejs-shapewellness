@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Lenis from 'lenis';
+import AppointmentModal from '../components/AppointmentModal';
 
 export default function Home() {
   // --- STATE MANAGEMENT ---
@@ -187,78 +188,32 @@ export default function Home() {
       
       <Header />
 
-      {/* MODAL */}
-      {isModalOpen && (
-        <div className="modal-overlay" style={{ display: 'flex' }}>
-          <div className="modal-form">
-  <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
-  <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
-  
-  <form onSubmit={handleBooking}>
-    <div className="form-grid">
-      <div className="input-group"><label>Name</label><input type="text" name="pName" placeholder="Full name" required /></div>
-      <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" placeholder="Enter Phone No" required /></div>
-      <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
-      
-      {/* Updated Service Selection */}
-      <div className="input-group">
-        <label>Service</label>
-        <select 
-          name="pService" 
-          required 
-          value={selectedService}
-          onChange={(e) => setSelectedService(e.target.value)}
-          className="custom-select"
-        >
-          <option value="" disabled>Select a service</option>
-          <option value="Slimming">Slimming</option>
-          <option value="Skin Care">Skin Care</option>
-          <option value="Hair Restoration">Hair Restoration</option>
-          <option value="Laser Tech">Laser Tech</option>
-          <option value="Dental Aesthetics">Dental Aesthetics</option>
-          <option value="Bridal Studio">Bridal Studio</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
 
-      {/* Conditional Message Field: Only shows when 'Other' is selected */}
-      {selectedService === "Other" && (
-        <div className="input-group full-width reveal-animation">
-          <label>Please Specify</label>
-          <textarea 
-            name="pMessage" 
-            placeholder="Tell us more about the service you need..."
-            required
-          ></textarea>
-        </div>
-      )}
-    </div>
+     {/* HERO SECTION */}
+<section className="hero" id="home">
+  <div className="slider-container">
+    {heroImages.map((src, index) => (
+      <div 
+        key={src}
+        className={`slide ${index === currentSlide ? 'active' : ''}`} 
+        style={{ backgroundImage: `url('${src}')` }}
+      ></div>
+    ))}
+  </div>
+  <div className="overlay"></div>
+  <div className="hero-content">
+    <h1>The Science of <br/><em>Timeless Beauty</em></h1>
+    <p>Advanced Aesthetics • Dermatology • Laser Technology</p>
     
-    <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '20px' }}>
-      Confirm Appointment
+    {/* Mobile-only Book Appointment Button */}
+    <button 
+      className="btn-appoint hero-mobile-btn" 
+      onClick={() => setIsModalOpen(true)}
+    >
+      Book Appointment
     </button>
-  </form>
-</div>
-        </div>
-      )}
-
-      {/* HERO SECTION */}
-      <section className="hero" id="home">
-        <div className="slider-container">
-          {heroImages.map((src, index) => (
-            <div 
-              key={src}
-              className={`slide ${index === currentSlide ? 'active' : ''}`} 
-              style={{ backgroundImage: `url('${src}')` }}
-            ></div>
-          ))}
-        </div>
-        <div className="overlay"></div>
-        <div className="hero-content">
-          <h1>The Science of <br/><em>Timeless Beauty</em></h1>
-          <p>Advanced Aesthetics • Dermatology • Laser Technology</p>
-        </div>
-      </section>
+  </div>
+</section>
 
       {/* MARQUEE */}
       <div className="marquee-section">
@@ -394,6 +349,10 @@ export default function Home() {
       </section>
       
       <Footer />
+      <AppointmentModal 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+      />
     </>
   );
 }

@@ -3,13 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import AppointmentModal from '../../components/AppointmentModal';
 import Lenis from 'lenis';
 
 export default function Treatments() {
   
   // --- STATE ---
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState<{id: string, date: string, time: string, service: string} | null>(null);
 
   // --- EFFECT: SCROLL LOGIC ---
   useEffect(() => {
@@ -60,68 +60,20 @@ export default function Treatments() {
   }, []);
 
   // --- HANDLERS ---
-  const handleBooking = useCallback((e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    
-    setBookingSuccess({
-      id: "#SW" + Math.floor(Math.random() * 9000),
-      date: formData.get('pDate') as string,
-      time: formData.get('pTime') as string,
-      service: formData.get('pService') as string,
-    });
+  const openAppointment = useCallback(() => {
+    setIsModalOpen(true);
   }, []);
 
-  const closeModal = useCallback(() => {
+  const closeAppointment = useCallback(() => {
     setIsModalOpen(false);
-    setBookingSuccess(null);
   }, []);
 
   return (
     <>
+      {/* LCP Discovery Optimization: Fixes Lighthouse LCP discovery audit */}
+      <link rel="preload" as="image" href="/assets/Shape Wellness Logo Final.png" fetchPriority="high" />
+      
       <Header />
-
-      {/* --- MODAL --- */}
-      {isModalOpen && (
-        <div className="modal-overlay" style={{ display: 'flex' }}>
-          <div className="modal-box">
-            <span className="close-btn" onClick={closeModal}>×</span>
-            {!bookingSuccess ? (
-              <div className="modal-form">
-                <h2 style={{ fontFamily: "'Playfair Display', serif", marginBottom: '5px' }}>Book Appointment</h2>
-                <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '25px' }}>Complete the form to schedule your visit.</p>
-                <form onSubmit={handleBooking}>
-                  <div className="form-grid">
-                    <div className="input-group"><label>Name</label><input type="text" name="pName" required /></div>
-                    <div className="input-group"><label>Phone</label><input type="tel" name="pPhone" required /></div>
-                    <div className="input-group"><label>Date</label><input type="date" name="pDate" required /></div>
-                    <div className="input-group"><label>Time</label><input type="time" name="pTime" required /></div>
-                    <div className="input-group full-width">
-                      <label>Service</label>
-                      <select name="pService">
-                        <option>Slimming</option>
-                        <option>Skin Care</option>
-                        <option>Hair Restoration</option>
-                        <option>Laser Tech</option>
-                        <option>Dental Aesthetics</option>
-                        <option>Bridal Studio</option>
-                      </select>
-                    </div>
-                    <div className="input-group full-width"><label>Message</label><textarea name="pMessage" placeholder="Any specific concerns?"></textarea></div>
-                  </div>
-                  <button type="submit" className="btn-appoint" style={{ width: '100%', marginTop: '10px' }}>Confirm Booking</button>
-                </form>
-              </div>
-            ) : (
-              <div className="success-message" style={{ display: 'block', width: '100%', textAlign: 'center' }}>
-                <i className="fas fa-check-circle" style={{ fontSize: '50px', color: 'var(--primary-orange)', marginBottom: '20px' }}></i>
-                <h2>Confirmed!</h2>
-                <button className="btn-appoint" onClick={closeModal}>Close</button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       <main>
         {/* --- HERO --- */}
@@ -153,8 +105,8 @@ export default function Treatments() {
                   key={index}
                   style={{ 
                     position: 'sticky', 
-                    top: `${100 + (index * 20)}px`, // Restores the stacking overlap logic
-                    transform: 'translateZ(0)', // GPU acceleration for smooth sticky scroll
+                    top: `${100 + (index * 20)}px`, 
+                    transform: 'translateZ(0)', 
                     marginBottom: '50px' 
                   }}
                 >
@@ -165,7 +117,7 @@ export default function Treatments() {
                     <span className="card-category">{item.cat}</span>
                     <h3 className="card-title">{item.title}</h3>
                     <p className="card-text">{item.text}</p>
-                    <button className="btn-card-link" onClick={() => setIsModalOpen(true)}>
+                    <button className="btn-card-link" onClick={openAppointment}>
                       Book Consultation <i className="fas fa-arrow-right"></i>
                     </button>
                   </div>
@@ -178,6 +130,9 @@ export default function Treatments() {
       </main>
 
       <Footer />
+
+      {/* Unified Appointment Modal */}
+      <AppointmentModal isOpen={isModalOpen} onClose={closeAppointment} />
     </>
   );
 }

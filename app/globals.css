@@ -44,6 +44,7 @@ section { padding: 100px 0; }
 /* =========================================
    2. SHARED COMPONENTS (Header, Footer, Preloader)
    ========================================= */
+
 /* --- HEADER --- */
 header { 
     position: fixed; width: 100%; top: 0; z-index: 1000; padding: 15px 0; transition: 0.3s; 

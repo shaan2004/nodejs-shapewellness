@@ -5,11 +5,12 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Lenis from 'lenis';
 import AppointmentModal from '../components/AppointmentModal';
+import Image from 'next/image';
 
 
 export default function Home() {
   // --- STATE MANAGEMENT ---
-  const [isLoaded, setIsLoaded] = useState(false);
+ 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
@@ -32,11 +33,6 @@ export default function Home() {
     '/assets/shapewellness.webp'
   ];
 
-  // --- PRELOADER ---
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 1000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // --- HERO SLIDER ---
   useEffect(() => {
@@ -182,8 +178,26 @@ export default function Home() {
       <div 
         key={src}
         className={`slide ${index === currentSlide ? 'active' : ''}`} 
-        style={{ backgroundImage: `url('${src}')` }}
-      ></div>
+        style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%',
+          zIndex: index === currentSlide ? 2 : 1 
+        }}
+      >
+        <Image
+          src={src}
+          alt={`Shape Wellness Hero ${index + 1}`}
+          fill
+          // Priority tells the browser to download the first image immediately
+          priority={index === 0} 
+          loading={index === 0 ? "eager" : "lazy"}
+          style={{ objectFit: 'cover' }}
+          quality={85}
+        />
+      </div>
     ))}
   </div>
   <div className="overlay"></div>
@@ -191,7 +205,6 @@ export default function Home() {
     <h1>The Science of <br/><em>Timeless Beauty</em></h1>
     <p>Advanced Aesthetics • Dermatology • Laser Technology</p>
     
-    {/* Mobile-only Book Appointment Button */}
     <button 
       className="btn-appoint hero-mobile-btn" 
       onClick={() => setIsModalOpen(true)}
@@ -200,7 +213,6 @@ export default function Home() {
     </button>
   </div>
 </section>
-
       {/* MARQUEE */}
       <div className="marquee-section">
         <div className="marquee-track">
@@ -263,41 +275,54 @@ export default function Home() {
       </section>
 
       {/* CLINICAL SERVICES */}
-      <section className="clinical-services" id="clinical">
-        <div className="clinical-wrapper-card" ref={clinWrapperRef}>
-          <div className="container">
-            <div className="section-header">
-              <span className="section-subtitle">Our Expertise</span>
-              <h2 className="section-title" style={{ fontSize: '3rem' }}>Clinical Services</h2>
-              <p>Explore our full range of treatments</p>
-            </div>
+     
+        <section className="clinical-services" id="clinical">
+  <div className="clinical-wrapper-card" ref={clinWrapperRef}>
+    <div className="container">
+      <div className="section-header">
+        <span className="section-subtitle">Our Expertise</span>
+        <h2 className="section-title" style={{ fontSize: '3rem' }}>Clinical Services</h2>
+        <p>Explore our full range of treatments</p>
+      </div>
+    </div>
+    
+    <div className="clinical-track" ref={clinTrackRef}>
+      {[
+        { title: "PRP Skin", desc: "Natural skin rejuvenation using plasma.", img: "/assets/prp.webp" },
+        { title: "Micro Needling", desc: "Boost collagen and smooth texture.", img: "/assets/needling.webp" },
+        { title: "Skin Whitening", desc: "Restore radiance and even tone.", img: "/assets/whitening.webp" },
+        { title: "Laser Hair Removal", desc: "Pain-free, long-lasting smoothness.", img: "/assets/laser.webp" },
+        { title: "Acne Treatment", desc: "Clear skin and reduce scarring.", img: "/assets/acne.webp" },
+        { title: "Body Contouring", desc: "Non-invasive fat reduction and shaping.", img: "/assets/body.webp" }
+      ].map((service, idx) => (
+        <div className="clinical-card" key={idx}>
+          {/* Container for the optimized Image */}
+          <div className="clinical-img" style={{ position: 'relative', overflow: 'hidden', height: '250px' }}>
+            <Image 
+              src={service.img} 
+              alt={service.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              style={{ objectFit: 'cover' }}
+              loading="lazy"
+              quality={75} // Slightly reduce quality to save significantly on file size
+            />
+          </div> {/* <--- Added this missing closing div */}
+          
+          <div className="clinical-info">
+            <h3>{service.title}</h3>
+            <p>{service.desc}</p>
+            <span className="clinical-link">Learn More</span>
           </div>
-          <div className="clinical-track" ref={clinTrackRef}>
-            {[
-              { title: "PRP Skin", desc: "Natural skin rejuvenation using plasma.", img: "/assets/prp.webp" },
-              { title: "Micro Needling", desc: "Boost collagen and smooth texture.", img: "/assets/needling.webp" },
-              { title: "Skin Whitening", desc: "Restore radiance and even tone.", img: "/assets/whitening.webp" },
-              { title: "Laser Hair Removal", desc: "Pain-free, long-lasting smoothness.", img: "/assets/laser.webp" },
-              { title: "Acne Treatment", desc: "Clear skin and reduce scarring.", img: "/assets/acne.webp" },
-              { title: "Body Contouring", desc: "Non-invasive fat reduction and shaping.", img: "/assets/body.webp" }
-            ].map((service, idx) => (
-              <div className="clinical-card" key={idx}>
-                <div className="clinical-img" style={{ backgroundImage: `url('${service.img}')`, backgroundColor: '#eee' }}></div>
-                <div className="clinical-info">
-                  <h3>{service.title}</h3>
-                  <p>{service.desc}</p>
-                  <span className="clinical-link">Learn More</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> 
-      </section>
-
+        </div>
+      ))}
+    </div>
+  </div> 
+</section>
       {/* REVIEWS */}
       <section className="reviews" id="reviews" ref={reviewSectionRef} style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="review-parallax-wrapper" ref={reviewBgRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '140%', zIndex: 0, transform: 'translate3d(0, -20%, 0)', pointerEvents: 'none' }}>
-            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80" 
+            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=50&fm=webp" 
                  className="review-bg-img" 
                  alt=""
                  style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.15 }} /> 

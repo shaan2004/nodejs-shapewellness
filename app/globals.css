@@ -140,11 +140,18 @@ textarea { resize: none; height: 80px; }
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform; /* Performance optimization for floating elements */
 }
-
 .social-float-icon:hover {
-  transform: scale(1.1) translateX(-5px);
-  border-color: var(--primary-orange);
-  box-shadow: 0 6px 15px rgba(244, 99, 37, 0.4);
+  /* Use translate3d for better mobile GPU performance */
+  transform: scale(1.1) translate3d(-5px, 0, 0); 
+  
+  /* If you want the icon itself to stay white but the shadow to glow orange */
+  box-shadow: 0 6px 15px rgba(242, 101, 34, 0.5); 
+  
+  /* Optional: change the background to the primary orange on hover */
+  /* background-color: var(--primary-orange) !important; */
+  
+  /* Ensure the transition is smooth */
+  transition: transform 0.3s var(--easing), box-shadow 0.3s var(--easing);
 }
 
 /* /* =========================================

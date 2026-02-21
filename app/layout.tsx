@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
-import "./globals.css"; // <--- THIS LINE IS CRITICAL
-
-// ... rest of the file
+import "./globals.css";
+import SocialFloat from "@/components/SocialFloat";
 
 const manrope = Manrope({ 
   subsets: ["latin"],
   variable: "--font-manrope",
-  weight: ["300", "400", "600"]
+  weight: ["300", "400", "600"],
+  display: 'swap', // Optimization for performance
 });
 
 const playfair = Playfair_Display({ 
   subsets: ["latin"],
   variable: "--font-playfair",
   weight: ["400", "700"], 
-  style: ["normal", "italic"]
+  style: ["normal", "italic"],
+  display: 'swap', // Optimization for performance
 });
 
 export const metadata: Metadata = {
@@ -34,6 +35,10 @@ export default function RootLayout({
       </head>
       <body className={`${manrope.className} ${playfair.variable}`}>
         {children}
+        
+        {/* Floating elements visible on all pages */}
+        <SocialFloat />
+        
       </body>
     </html>
   );

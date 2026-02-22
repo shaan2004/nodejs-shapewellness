@@ -319,7 +319,7 @@ const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
           onClick={() => handleVideoClick(index)}
         >
           <video
-            ref={(el) => (videoRefs.current[index] = el)}
+            ref={(el) => {(videoRefs.current[index] = el)}}
             src={`/assets/reels/${file}`}
             autoPlay
             loop

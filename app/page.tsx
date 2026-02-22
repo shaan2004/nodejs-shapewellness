@@ -16,7 +16,7 @@ export default function Home() {
   const [selectedService, setSelectedService] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState<{id: string, date: string, time: string, service: string} | null>(null);
   // Inside your Home function
-const [hasShown, setHasShown] = useState(false); // Add this one
+ const [hasShown, setHasShown] = useState(false); // Add this one
   // --- REFS ---
   const journeySectionRef = useRef<HTMLElement>(null);
   const journeyImgRef = useRef<HTMLDivElement>(null);
@@ -136,14 +136,24 @@ const [hasShown, setHasShown] = useState(false); // Add this one
     setUnmutedIndex(index);
   }
 };
-
-  // --- HORIZONTAL MOUSE PAN ---
+// --- HORIZONTAL MOUSE PAN (PRECISE MATH) ---
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent, track: HTMLElement) => {
       if (window.matchMedia('(min-width: 900px)').matches) {
-        const percentage = e.clientX / window.innerWidth;
-        const maxScroll = track.scrollWidth - window.innerWidth + 150;
+        // 1. Calculate boundaries based on the container, not the window
+        const rect = track.parentElement?.getBoundingClientRect();
+        if (!rect) return;
+
+        const visibleWidth = rect.width;
+        const trackWidth = track.scrollWidth;
+        const maxScroll = trackWidth - visibleWidth;
+
         if (maxScroll > 0) {
+          // 2. Map mouse position (0 to 1) relative to the container
+          const mouseX = e.clientX - rect.left;
+          const percentage = Math.max(0, Math.min(1, mouseX / visibleWidth));
+          
+          // 3. Move the track exactly that percentage
           const x = percentage * maxScroll * -1;
           track.style.transform = `translate3d(${x}px, 0, 0)`;
         }
@@ -166,7 +176,6 @@ const [hasShown, setHasShown] = useState(false); // Add this one
       clinWrap?.removeEventListener('mousemove', onClinMove);
     };
   }, []);
-
   // --- HANDLERS ---
   const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

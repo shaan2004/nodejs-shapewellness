@@ -123,7 +123,7 @@ export default function Experience() {
       sr.reveal('.section-center-title');
       sr.reveal('.transform-card', { interval: 100 });
       sr.reveal('.icon-card', { interval: 100 });
-      sr.reveal('.review-card', { interval: 100 });
+      sr.reveal('.reviews-scroll-outer');
       sr.reveal('.review-form-box');
       sr.reveal('.footer-grid div', { interval: 100, origin: 'bottom', distance: '20px' });
     };

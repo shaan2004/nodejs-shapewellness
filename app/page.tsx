@@ -10,12 +10,13 @@ import Image from 'next/image';
 
 export default function Home() {
   // --- STATE MANAGEMENT ---
- 
+ const [unmutedIndex, setUnmutedIndex] = useState<number | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
   const [bookingSuccess, setBookingSuccess] = useState<{id: string, date: string, time: string, service: string} | null>(null);
-
+  // Inside your Home function
+const [hasShown, setHasShown] = useState(false); // Add this one
   // --- REFS ---
   const journeySectionRef = useRef<HTMLElement>(null);
   const journeyImgRef = useRef<HTMLDivElement>(null);
@@ -80,7 +81,7 @@ export default function Home() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-
+    
     // 3. Conditional ScrollReveal
     const initSR = async () => {
       const module = await import('scrollreveal');
@@ -108,6 +109,7 @@ export default function Home() {
     };
 
     initSR();
+  
 
     return () => {
       lenis.destroy();
@@ -115,6 +117,25 @@ export default function Home() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  useEffect(() => {
+    const triggerAutoModal = () => {
+      // If user scrolls more than 600px and the modal hasn't popped up yet
+      if (window.scrollY > 600 && !hasShown) {
+        setIsModalOpen(true);
+        setHasShown(true);
+      }
+    };
+
+    window.addEventListener('scroll', triggerAutoModal, { passive: true });
+    return () => window.removeEventListener('scroll', triggerAutoModal);
+  }, [hasShown]);
+  const handleVideoClick = (index: number) => {
+  if (unmutedIndex === index) {
+    setUnmutedIndex(null);
+  } else {
+    setUnmutedIndex(index);
+  }
+};
 
   // --- HORIZONTAL MOUSE PAN ---
   useEffect(() => {
@@ -163,7 +184,7 @@ export default function Home() {
     setBookingSuccess(null);
     setSelectedService("");
   }, []);
-
+const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   return (
     <>
      
@@ -195,7 +216,7 @@ export default function Home() {
           priority={index === 0} 
           loading={index === 0 ? "eager" : "lazy"}
           style={{ objectFit: 'cover' }}
-          quality={85}
+          quality={75}
         />
       </div>
     ))}
@@ -273,7 +294,54 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* LOCAL VIDEO REELS SECTION */}
+       {/* LOCAL VIDEO REELS SECTION */}
+<section className="insta-reels" id="social">
+  <div className="container">
+    <div className="section-header">
+      <span className="section-subtitle">Real Results</span>
+      <h2 className="section-title">Clinical Gallery</h2>
+      <p>Click any reel to enable audio and see our transformations</p>
+    </div>
+  </div>
 
+  <div className="reels-container">
+    <div className="reels-scroll-wrapper">
+      {[
+        "reel1.mp4",
+        "reel2.mp4",
+        "reel3.mp4",
+        "reel4.mp4"
+      ].map((file, index) => (
+        <div 
+          key={index} 
+          className="reel-frame" 
+          onClick={() => handleVideoClick(index)}
+        >
+          <video
+            ref={(el) => (videoRefs.current[index] = el)}
+            src={`/assets/reels/${file}`}
+            autoPlay
+            loop
+            muted={unmutedIndex !== index} 
+            playsInline
+            className="local-video"
+            poster="/assets/shapewellness.webp"
+          />
+          
+          {/* Audio Indicator Overlay */}
+          <div className="audio-indicator">
+            <i className={`fas ${unmutedIndex === index ? 'fa-volume-up' : 'fa-volume-mute'}`}></i>
+          </div>
+
+          <div className="reel-brand-tag" style={{ pointerEvents: 'none' }}>
+            <img src="/assets/Shape Wellness Logo Final.png" alt="Logo" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
       {/* CLINICAL SERVICES */}
      
         <section className="clinical-services" id="clinical">
@@ -319,6 +387,7 @@ export default function Home() {
     </div>
   </div> 
 </section>
+    
       {/* REVIEWS */}
       <section className="reviews" id="reviews" ref={reviewSectionRef} style={{ position: 'relative', overflow: 'hidden' }}>
         <div className="review-parallax-wrapper" ref={reviewBgRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '140%', zIndex: 0, transform: 'translate3d(0, -20%, 0)', pointerEvents: 'none' }}>
@@ -363,6 +432,7 @@ export default function Home() {
       <AppointmentModal 
         isOpen={isModalOpen} 
         onClose={closeModal} 
+        
       />
     </>
   );

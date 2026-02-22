@@ -361,7 +361,100 @@ textarea { resize: none; height: 80px; }
     text-transform: uppercase; 
     letter-spacing: 1.5px; 
 }
+/* REELS SECTION STYLING */
+.insta-reels {
+  padding: 100px 0;
+  background: #ffffff;
+}
 
+.reels-container {
+  width: 100%;
+  overflow-x: auto;
+  padding: 20px 40px;
+  cursor: grab;
+  /* Hide scrollbars */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.reels-container::-webkit-scrollbar {
+  display: none;
+}
+
+.reels-scroll-wrapper {
+  display: flex;
+  gap: 25px;
+  width: max-content;
+}
+
+.reel-frame {
+  width: 320px;
+  height: 570px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #000;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  transition: transform 0.4s ease;
+}
+
+.reel-frame:hover {
+  transform: translateY(-10px);
+}
+
+.local-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Brand Overlay Tag */
+.reel-brand-tag {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.reel-brand-tag img {
+  height: 15px;
+  filter: brightness(0) invert(1); /* Makes logo white */
+}
+
+@media (max-width: 768px) {
+  .reels-container {
+    padding: 20px;
+  }
+  .reel-frame {
+    width: 260px;
+    height: 460px;
+  }
+}
+.audio-indicator {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: background 0.3s ease;
+}
+
+.reel-frame:hover .audio-indicator {
+  background: var(--primary-orange);
+}
 /* --- SIGNATURE & CLINICAL SERVICES --- */
 .services { 
     padding: 100px 0; 
@@ -471,6 +564,8 @@ textarea { resize: none; height: 80px; }
 .clinical-info h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--text-dark); }
 .clinical-info p { color: var(--text-light); font-size: 0.95rem; margin-bottom: 20px; }
 .clinical-link { color: var(--primary-orange); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+
+
 
 /* --- REVIEWS --- */
 .reviews { background: var(--white); }
@@ -741,56 +836,342 @@ textarea { resize: none; height: 80px; }
 /* =========================================
    5. EXPERIENCE PAGE STYLES
    ========================================= */
-.page-header { padding: 180px 0 80px; text-align: center; }
-.page-header h1 { font-size: 4rem; margin-bottom: 20px; }
-.page-header p { font-size: 1.2rem; color: var(--text-light); max-width: 700px; margin: 0 auto; }
 
-.transform-section { padding: 80px 0; }
-.transform-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 60px; text-align: center; }
-.transform-card { padding: 20px; transition: transform 0.3s var(--easing); }
+/* --- PAGE HEADER --- */
+.page-header { 
+    padding: 180px 0 80px; 
+    text-align: center; 
+}
 
-.circle-image { width: 250px; height: 250px; border-radius: 50%; overflow: hidden; margin: 0 auto 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border: 5px solid white; transition: border-color 0.4s ease, transform 0.4s ease; }
-.circle-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--easing); }
-.transform-card:hover .circle-image { border-color: var(--primary-orange);box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); transform: scale(1.02); }
-.transform-card:hover .circle-image img { transform: scale(1.1); }
-.transform-card p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 15px; min-height: 80px; }
-.transform-card h3 { font-size: 1.5rem; color: var(--primary-orange); margin-bottom: 5px; }
-.transform-card span { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: var(--text-dark); }
+.page-header h1 { 
+    font-size: 4rem; 
+    margin-bottom: 20px; 
+}
 
-.before-after-section { padding: 100px 0; background: var(--white); }
-.section-center-title { text-align: center; font-size: 3.5rem; margin-bottom: 80px; }
-.icon-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 40px; }
-.icon-card { text-align: center; padding: 50px 30px; background: var(--card-inner-bg); border-radius: 30px; border: 2px solid transparent; transition: transform 0.4s var(--easing), border-color 0.4s, box-shadow 0.4s; }
-.icon-card:hover { transform: translateY(-10px); border-color: var(--primary-orange); box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); background: white; }
-.icon-wrapper { font-size: 2.5rem; margin-bottom: 25px; color: var(--text-dark); transition: color 0.3s; }
-.icon-card:hover .icon-wrapper { color: var(--primary-orange); }
-.icon-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
-.btn-outline-small { padding: 12px 30px; border: 1px solid var(--text-dark); border-radius: 50px; font-size: 0.85rem; font-weight: 600; transition: 0.3s; display: inline-block; background: transparent; color: var(--text-dark); }
-.icon-card:hover .btn-outline-small { background: var(--primary-orange); border-color: var(--primary-orange); color: white; }
+.page-header p { 
+    font-size: 1.2rem; 
+    color: var(--text-light); 
+    max-width: 700px; 
+    margin: 0 auto; 
+}
 
-.reviews-section { padding: 100px 0; background: var(--bg-off-white); }
-.reviews-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; margin-top: 50px; }
-.review-card { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.03); position: relative; border: 1px solid transparent; transition: all 0.3s ease; }
-.review-card:hover { border-color: var(--primary-orange); transform: translateY(-5px); }
-.stars { color: #FFB400; margin-bottom: 15px; font-size: 0.9rem; }
-.reviewer-meta { display: flex; align-items: center; gap: 15px; }
-.reviewer-img { width: 45px; height: 45px; border-radius: 50%; background: #eee; object-fit: cover; }
-.reviewer-info h4 { font-size: 0.95rem; font-weight: 700; margin: 0; }
-.reviewer-info span { font-size: 0.8rem; color: var(--primary-orange); text-transform: uppercase; }
+/* --- TRANSFORM SECTION --- */
+.transform-section { 
+    padding: 80px 0; 
+}
 
-.add-review-section { padding: 80px 0 120px; }
-.review-form-box { background: var(--white); max-width: 800px; margin: 0 auto; padding: 60px; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
-.form-title { text-align: center; margin-bottom: 40px; }
-.form-group { margin-bottom: 20px; }
-.form-control { width: 100%; padding: 15px; border: 1px solid #eee; border-radius: 8px; font-family: var(--font-manrope); font-size: 1rem; outline: none; transition: 0.3s; }
-.form-control:focus { border-color: var(--primary-orange); }
-.rating-select { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-.rating-star { font-size: 1.5rem; color: #ddd; cursor: pointer; transition: 0.2s; }
-.rating-star:hover, .rating-star.active { color: #FFB400; }
-.btn-submit { width: 100%; padding: 18px; background: var(--text-dark); color: white; border: none; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-.btn-submit:hover { background: var(--primary-orange); }
+.transform-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+    gap: 60px; 
+    text-align: center; 
+}
 
+.transform-card { 
+    padding: 20px; 
+    transition: transform 0.3s var(--easing); 
+}
 
+.circle-image { 
+    width: 250px; 
+    height: 250px; 
+    border-radius: 50%; 
+    overflow: hidden; 
+    margin: 0 auto 30px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+    border: 5px solid white; 
+    transition: border-color 0.4s ease, transform 0.4s ease; 
+    position: relative; /* Support for Next.js Image fill */
+}
+
+.circle-image img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.5s var(--easing); 
+}
+
+.transform-card:hover .circle-image { 
+    border-color: var(--primary-orange);
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    transform: scale(1.02); 
+}
+
+.transform-card:hover .circle-image img { 
+    transform: scale(1.1); 
+}
+
+.transform-card p { 
+    font-size: 0.95rem; 
+    color: var(--text-light); 
+    margin-bottom: 15px; 
+    min-height: 80px; 
+}
+
+.transform-card h3 { 
+    font-size: 1.5rem; 
+    color: var(--primary-orange); 
+    margin-bottom: 5px; 
+}
+
+.transform-card span { 
+    font-size: 0.85rem; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    font-weight: 700; 
+    color: var(--text-dark); 
+}
+
+/* --- BEFORE & AFTER --- */
+.before-after-section { 
+    padding: 100px 0; 
+    background: var(--white); 
+}
+
+.section-center-title { 
+    text-align: center; 
+    font-size: 3.5rem; 
+    margin-bottom: 80px; 
+}
+
+.icon-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 40px; 
+}
+
+.icon-card { 
+    text-align: center; 
+    padding: 50px 30px; 
+    background: var(--card-inner-bg); 
+    border-radius: 30px; 
+    border: 2px solid transparent; 
+    transition: transform 0.4s var(--easing), border-color 0.4s, box-shadow 0.4s; 
+}
+
+.icon-card:hover { 
+    transform: translateY(-10px); 
+    border-color: var(--primary-orange); 
+    box-shadow: 0 15px 30px rgba(247, 173, 95, 0.55); 
+    background: white; 
+}
+
+.icon-wrapper { 
+    font-size: 2.5rem; 
+    margin-bottom: 25px; 
+    color: var(--text-dark); 
+    transition: color 0.3s; 
+}
+
+.icon-card:hover .icon-wrapper { 
+    color: var(--primary-orange); 
+}
+
+.icon-card h3 { 
+    font-size: 1.5rem; 
+    margin-bottom: 15px; 
+}
+
+.btn-outline-small { 
+    padding: 12px 30px; 
+    border: 1px solid var(--text-dark); 
+    border-radius: 50px; 
+    font-size: 0.85rem; 
+    font-weight: 600; 
+    transition: 0.3s; 
+    display: inline-block; 
+    background: transparent; 
+    color: var(--text-dark); 
+}
+
+.icon-card:hover .btn-outline-small { 
+    background: var(--primary-orange); 
+    border-color: var(--primary-orange); 
+    color: white; 
+}
+
+/* =========================================
+   REVIEWS HORIZONTAL SCROLL LOGIC
+   ========================================= */
+.reviews-section { 
+    background: var(--bg-off-white); 
+    padding: 100px 0;
+    overflow: hidden;
+}
+
+.reviews-scroll-outer {
+    width: 100%;
+    overflow-x: auto;
+    padding: 20px 0 60px 0;
+    cursor: grab;
+    /* Hide Scrollbars */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.reviews-scroll-outer::-webkit-scrollbar {
+    display: none;
+}
+
+.reviews-container {
+    display: flex; /* Keeps all cards in one line */
+    gap: 30px;
+    padding-left: max(40px, calc((100vw - 1300px) / 2));
+    padding-right: 40px;
+    width: max-content; /* Forces container to stretch for all cards */
+}
+
+.review-card {
+    width: 380px;
+    flex-shrink: 0; /* Critical: Prevents cards from squishing to fit screen */
+    background: var(--white);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.4s var(--easing), box-shadow 0.4s ease;
+}
+
+/* Hover & Animation Logic */
+.review-card:hover {
+    transform: translateY(-10px) translateZ(0);
+    box-shadow: 0 20px 40px rgba(242, 101, 34, 0.15);
+}
+
+.review-card-img {
+    position: relative;
+    height: 240px;
+    width: 100%;
+}
+
+.review-category-tag {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: var(--primary-orange);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 5;
+}
+
+.review-card-content {
+    padding: 30px;
+}
+
+/* Responsive Mobile Fix */
+@media (max-width: 900px) {
+    .review-card {
+        width: 310px;
+    }
+    .reviews-container {
+        padding-left: 20px;
+        gap: 20px;
+    }
+}
+/* --- ADD REVIEW FORM --- */
+.add-review-section { 
+    padding: 80px 0 120px; 
+}
+
+.review-form-box { 
+    background: var(--white); 
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 60px; 
+    border-radius: 30px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05); 
+}
+
+.form-title { 
+    text-align: center; 
+    margin-bottom: 40px; 
+}
+
+.form-group { 
+    margin-bottom: 20px; 
+}
+
+.form-control { 
+    width: 100%; 
+    padding: 15px; 
+    border: 1px solid #eee; 
+    border-radius: 8px; 
+    font-family: var(--font-manrope); 
+    font-size: 1rem; 
+    outline: none; 
+    transition: 0.3s; 
+}
+
+.form-control:focus { 
+    border-color: var(--primary-orange); 
+}
+
+.rating-select { 
+    display: flex; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+    justify-content: center; 
+}
+
+.rating-star { 
+    font-size: 1.5rem; 
+    color: #ddd; 
+    cursor: pointer; 
+    transition: 0.2s; 
+}
+
+.rating-star:hover, 
+.rating-star.active { 
+    color: #FFB400; 
+}
+
+.btn-submit { 
+    width: 100%; 
+    padding: 18px; 
+    background: var(--text-dark); 
+    color: white; 
+    border: none; 
+    border-radius: 50px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: 0.3s; 
+}
+
+.btn-submit:hover { 
+    background: var(--primary-orange); 
+}
+
+/* =========================================
+   MOBILE RESPONSIVE OVERRIDES
+   ========================================= */
+@media (max-width: 900px) {
+    .page-header h1 { font-size: 2.8rem; }
+    .section-center-title { font-size: 2.2rem; margin-bottom: 40px; }
+    .review-form-box { padding: 40px 20px; }
+}
+
+@media (max-width: 768px) {
+    .review-card {
+        width: 300px;
+    }
+    .reviews-container {
+        padding-left: 20px;
+        gap: 20px;
+    }
+    .transform-grid {
+        gap: 30px;
+    }
+    .circle-image {
+        width: 200px;
+        height: 200px;
+    }
+}
 /* =========================================
    6. ABOUT PAGE STYLES
    ========================================= */

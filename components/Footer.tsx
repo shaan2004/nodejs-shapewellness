@@ -6,18 +6,20 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           
-          {/* Column 1: Logo & Tagline */}
+          {/* Column 1: Logo & Tagline - SEO Optimized Tagline */}
           <div className="footer-col">
             <img 
-  src="/assets/Shape Wellness Logo Final.png" 
-  alt="Shape Wellness Logo" 
-  width={150} // Pass as number
-  height={80} // Pass as number
-  fetchPriority="high" // Correct camelCase
-  loading="eager" 
-  style={{ width: '110px', height: '80px' }} 
-/>
-            <p style={{color: '#666'}}>Redefining beauty standards through science.</p>
+              src="/assets/Shape Wellness Logo Final.png" 
+              alt="Shape Wellness Logo" 
+              width={150} 
+              height={80} 
+              fetchPriority="high" 
+              loading="eager" 
+              style={{ width: '110px', height: '80px' }} 
+            />
+            <p style={{color: '#666', marginTop: '10px'}}>
+              <strong>Aesthetic Clinic in Chennai</strong> — Redefining beauty standards through advanced dermatology and science.
+            </p>
           </div>
 
           {/* Column 2: Menu Links */}
@@ -32,26 +34,20 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Column 3: Social Links with Icons */}
+          {/* Column 3: SEO Keywords Column - New! */}
           <div className="footer-col">
-             <h4 style={{marginBottom: '20px'}}>Social</h4>
-             <div className="footer-links social-icons">
-                <a href="https://www.instagram.com/shapewellness.chennai/#" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-instagram"></i> Instagram
-                </a>
-                <a href="https://www.threads.com/@shapewellness.chennai" target="_blank" rel="noopener noreferrer">
-                  <i className="fas fa-at"></i> Threads
-                </a>
-                <a href="https://www.facebook.com/profile.php?id=61578854806823#" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-facebook-f"></i> Facebook
-                </a>
-                <a href="https://wa.me/919500559119" target="_blank" rel="noopener noreferrer">
-                  <i className="fab fa-whatsapp"></i> WhatsApp
-                </a>
-             </div>
+            <h4 style={{marginBottom: '20px'}}>Our Specialties</h4>
+            <div className="footer-links" style={{fontSize: '0.85rem', color: '#888'}}>
+              <span style={{marginBottom: '8px', display: 'block'}}>• Best Dermatology Clinic Chennai</span>
+              <span style={{marginBottom: '8px', display: 'block'}}>• PRP Skin & Hair Therapy</span>
+              <span style={{marginBottom: '8px', display: 'block'}}>• HydraFacial Chennai</span>
+              <span style={{marginBottom: '8px', display: 'block'}}>• Laser Hair Removal</span>
+              <span style={{marginBottom: '8px', display: 'block'}}>• Body Contouring & Fat Reduction</span>
+              <span style={{marginBottom: '8px', display: 'block'}}>• Bridal Skincare Packages</span>
+            </div>
           </div>
 
-          {/* Column 4: Visit Info with Icons */}
+          {/* Column 4: Visit Info */}
           <div className="footer-col">
              <h4 style={{marginBottom: '20px'}}>Visit</h4>
              <ul className="visit-info">
@@ -62,6 +58,7 @@ export default function Footer() {
                 <li>
                   <i className="fas fa-map-marker-alt"></i>
                   <span>
+                    <strong>Shape Wellness Chennai</strong><br/>
                     No 6, Sri Mahalakshmi Nagar,<br/>
                     Manapakkam Main Rd, Chennai 600122
                   </span>
@@ -74,11 +71,26 @@ export default function Footer() {
           </div>
 
         </div>
-        <div className="copyright">© 2026 Shape Wellness. All Rights Reserved.</div>
+
+        {/* SEO Social Row */}
+        <div className="footer-social-row" style={{borderTop: '1px solid #eee', paddingTop: '20px', marginTop: '40px', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px'}}>
+           <div className="footer-links social-icons" style={{display: 'flex', gap: '20px'}}>
+                <a href="https://www.instagram.com/shapewellness.chennai/#" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-instagram"></i> Instagram
+                </a>
+                <a href="https://wa.me/919500559119" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://www.facebook.com/profile.php?id=61578854806823#" target="_blank" rel="noopener noreferrer">
+                  <i className="fab fa-facebook-f"></i> Facebook
+                </a>
+           </div>
+           <div className="copyright">© 2026 Shape Wellness | Advanced Skin, Hair & Laser Clinic Chennai</div>
+        </div>
       </div>
 
       <style jsx>{`
-        .footer-links a {
+        .footer-links a, .footer-links span {
           display: flex;
           align-items: center;
           gap: 10px;
@@ -89,12 +101,12 @@ export default function Footer() {
         }
         
         .footer-links a:hover {
-          color: #e65100; /* Using your brand orange */
+          color: #F26522;
         }
 
         .footer-links i {
           font-size: 14px;
-          width: 20px; /* Ensures consistent alignment */
+          width: 20px;
           text-align: center;
         }
 
@@ -114,12 +126,16 @@ export default function Footer() {
         }
 
         .visit-info i {
-          color: #e65100; /* Using your brand orange for contact icons */
+          color: #F26522;
           margin-top: 4px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .footer-grid { grid-template-columns: 1fr 1fr; gap: 30px; }
+          .footer-social-row { flex-direction: column; text-align: center; align-items: center; }
+        }
+        @media (max-width: 600px) {
+          .footer-grid { grid-template-columns: 1fr; }
         }
       `}</style>
     </footer>
